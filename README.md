@@ -11,4 +11,3 @@ Metacello new
    githubUser: 'uca-is2' project: 'project-template' commitish: 'master' path: 'repository';
    load: 'development'.
 ```
-Prueba de Fran
