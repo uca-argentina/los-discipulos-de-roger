@@ -10,28 +10,24 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-Player class >> getNameSurname [
-	^nameSurname 
-]
-
-{ #category : #'as yet unclassified' }
-Player class >> playing [
-	^gamePlaying.
-]
-
-{ #category : #'as yet unclassified' }
 Player class >> position [
 	^0
 ]
 
 { #category : #instanceCreation }
 Player class >> withNameSurname: aNameSurname [ 
-	nameSurname := aNameSurname.
-	^self
+	| aGame |
+	aGame := Game newNotValidGame.
+	^self withNameSurname:aNameSurname playing: aGame
 ]
 
 { #category : #instanceCreation }
 Player class >> withNameSurname: aNameSurname  playing: aGame [ 
+	
+		aNameSurname isEmpty 
+		ifTrue: [ InstanceCreationFailed
+				signal: 'The player name cannot be blank' ].
+		
 		^self new 
 		initializeWithNameSurname: aNameSurname and: aGame.
 ]
@@ -48,6 +44,13 @@ Player >> initializeWithNameSurname: aNameSurname and: aGame [
 	position := 0.
 ]
 
+{ #category : #playing }
+Player >> join: aGame [
+
+playingGame := aGame.
+aGame add: self.
+]
+
 { #category : #'as yet unclassified' }
 Player >> playing [
 	^playingGame 
@@ -55,10 +58,10 @@ Player >> playing [
 
 { #category : #'as yet unclassified' }
 Player >> position [
-	^0
+	^position
 ]
 
 { #category : #playing }
-Player >> roll [
-	position := position + (playingGame roll)
+Player >> roll: aDie [ 
+	position := position + aDie roll.
 ]

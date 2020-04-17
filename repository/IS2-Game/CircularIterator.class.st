@@ -11,7 +11,7 @@ Class {
 		'options',
 		'currentIndex'
 	],
-	#category : #'IS2-Dice-Tests'
+	#category : #'IS2-Game'
 }
 
 { #category : #'instance creation' }
