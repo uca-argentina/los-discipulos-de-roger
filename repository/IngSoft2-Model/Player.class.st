@@ -18,12 +18,12 @@ Player class >> withNameSurname: aNameSurname [
 		initializeWithNameSurname: aNameSurname
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #comparing }
 Player >> <= aPlayer [ 
 	^position <= (aPlayer position)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Player >> getNameSurname [
 	^nameSurname
 ]
@@ -34,7 +34,7 @@ Player >> initializeWithNameSurname: aNameSurname [
 	position := 0.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Player >> position [
 	^position
 ]

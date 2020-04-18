@@ -4,7 +4,7 @@ Class {
 	#category : #'IngSoft2-Model-Game'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Finished >> winner: aGame [ 
 	^aGame winnerWhenFinished.
 ]

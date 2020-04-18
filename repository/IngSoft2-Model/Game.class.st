@@ -33,12 +33,20 @@ Game class >> withFields: aNumber andPlayers: players [
 ^self with: Die d4  andFields: aNumber andPlayers: players
 ]
 
-{ #category : #resultados }
+{ #category : #results }
 Game >> att: aPosition [
 
 "This could be used to get when is a players turn or to get the positions at the end of the game"
 
 ^playerSequence att: aPosition 
+]
+
+{ #category : #playing }
+Game >> carryOut [
+"playNext pero juega hasta que termine el juego, no sólo la próxima jugada"
+	| position |
+	position := playerSequence next rollingFor: self.
+	state finishAndContinue:self at: position.
 ]
 
 { #category : #StateChanging }
@@ -47,7 +55,7 @@ Game >> finishAnStartedGame [
 	playerSequence sort
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Game >> getDice [
 	^dice
 ]
@@ -61,12 +69,12 @@ Game >> initializeDice: aDice withFields: aNumber andPlayers: players [
 	"tablePosition := players."
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 Game >> isPlayedBy: aPlayer [ 
 	^ playerSequence includes: aPlayer.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Game >> length [
 	^length
 ]
@@ -83,17 +91,17 @@ Game >> roll [
 	^dice roll.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Game >> state [
 	^state
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Game >> winner [
 	^state winner: self
 ]
 
-{ #category : #resultados }
+{ #category : #results }
 Game >> winnerWhenFinished [
 	^playerSequence first.
 ]
