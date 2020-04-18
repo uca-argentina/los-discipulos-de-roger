@@ -11,6 +11,7 @@ Class {
 }
 
 { #category : #instanceCreation }
+
 Game class >> default: players [
 	^self with: Die d6 andFields: 12 andPlayers: players 
 ]
@@ -45,7 +46,6 @@ Game >> att: aPosition [
 Game >> finishAnStartedGame [
 	state := Finished new.
 	playerSequence sort
-]
 
 { #category : #'as yet unclassified' }
 Game >> getDice [
@@ -59,7 +59,6 @@ Game >> initializeDice: aDice withFields: aNumber andPlayers: players [
 	length := aNumber.
 	state := Started new.
 	"tablePosition := players."
-]
 
 { #category : #'as yet unclassified' }
 Game >> isPlayedBy: aPlayer [ 

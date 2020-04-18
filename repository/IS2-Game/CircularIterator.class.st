@@ -25,11 +25,14 @@ CircularIterator class >> cyclingOver: aSequentiableCollection [
 ]
 
 { #category : #accessing }
+
 CircularIterator >> att: aPosition [
 ^options at: aPosition 
 ]
 
 { #category : #accessing }
+=======
+
 CircularIterator >> current [
 
 	^options at: currentIndex + 1
@@ -39,6 +42,7 @@ CircularIterator >> current [
 CircularIterator >> first [
 	^options first
 ]
+
 
 { #category : #testing }
 CircularIterator >> includes: anObject [
@@ -66,7 +70,9 @@ CircularIterator >> reset [
 	currentIndex := 0
 ]
 
+
 { #category : #accessing }
 CircularIterator >> sort [
 	options := options sort
 ]
+=======

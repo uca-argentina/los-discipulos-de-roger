@@ -21,6 +21,9 @@ Player class >> withNameSurname: aNameSurname [
 { #category : #'as yet unclassified' }
 Player >> <= aPlayer [ 
 	^position <= (aPlayer position)
+{ #category : #'as yet unclassified' }
+Player class >> position [
+	^0
 ]
 
 { #category : #'as yet unclassified' }
@@ -34,6 +37,13 @@ Player >> initializeWithNameSurname: aNameSurname [
 	position := 0.
 ]
 
+{ #category : #playing }
+Player >> join: aGame [
+
+playingGame := aGame.
+aGame add: self.
+]
+
 { #category : #'as yet unclassified' }
 Player >> position [
 	^position
@@ -42,4 +52,5 @@ Player >> position [
 { #category : #playing }
 Player >> rollingFor:aGame [ 
 	^position := position + aGame roll.
+
 ]
