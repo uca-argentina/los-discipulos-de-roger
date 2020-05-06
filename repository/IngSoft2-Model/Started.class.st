@@ -6,14 +6,20 @@ Class {
 
 { #category : #StateChanging }
 Started >> finish: aGame at: aPosition [
-
-	(aGame length >= aPosition) ifFalse: [ aGame finishAnStartedGame ].
+	(self isFinished: aGame at: aPosition)
+		ifFalse: [ aGame finishAnStartedGame ]
 ]
 
 { #category : #StateChanging }
-Started >> finishAndContinue: aGame at: aPosition [.
+Started >> finishAndContinue: aGame at: aPosition [
+	(self isFinished: aGame at: aPosition)
+		ifFalse: [ aGame finishAnStartedGame ]
+		ifTrue: [ aGame playUntilFinished ]
+]
 
-	(aGame length >= aPosition) ifFalse: [ aGame finishAnStartedGame ] ifTrue:[aGame playUntilFinished].
+{ #category : #StateChanging }
+Started >> isFinished: aGame at: aPosition [
+	^ aGame laps > aPosition
 ]
 
 { #category : #StateChanging }

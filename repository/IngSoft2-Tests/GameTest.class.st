@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #tests }
+GameTest >> anotherPlayer [
+	^ Player named: 'Fran'
+]
+
+{ #category : #tests }
+GameTest >> newPlayer [
+	^ Player named: 'Manu'
+]
+
+{ #category : #tests }
 GameTest >> test03WithMultipleDice [
 
 | aGame aPlayer otherPlayer |
@@ -30,7 +40,7 @@ GameTest >> test05PlayGame [
 | aGame aPlayer |
 aPlayer := Player named: 'Fran'.
 aGame := Game with: (Die of: 6 rolling: #(4))  andPlayers: { aPlayer } .
-1 to: 4 do: [ :iteration | aGame playNext]. "Hacemos una iteración en este test, en vez de llamar a carryOut, para verificar que luego de 4 tiradas de 4 el juego clasifique como terminado"
+3 timesRepeat:  [aGame playNext]. "Hacemos una iteración en este test, en vez de llamar a carryOut, para verificar que luego de 4 tiradas de 4 el juego clasifique como terminado"
 self assert: (aGame isFinished).
 
 ]
@@ -62,14 +72,43 @@ self assert: ((aGame att:2)name) equals: 'Manu'
 
 { #category : #tests }
 GameTest >> test08CannotAskForWinnerOfAnUnfinishedGame [
+	| aGame aPlayer otherPlayer |
+	aPlayer := self anotherPlayer.
+	otherPlayer := self newPlayer.
+	aGame := Game
+		with: (Die of: 6 rolling: #(4 1))
+		andPlayers:
+			{aPlayer.
+			otherPlayer}.
+	aGame playNext.
+	self
+		should: [ aGame winner ]
+		raise: InvalidAction
+		withMessageText: 'The game has not finished yet.'
+]
+
+{ #category : #tests }
+GameTest >> test09NewGameWith9Laps [
+	| aGame aPlayer otherPlayer |
+	aPlayer := self anotherPlayer.
+	otherPlayer := self newPlayer.
+	aGame := Game
+		with: (Die of: 6 rolling: #(4 1))
+		andPlayers:
+			{aPlayer.
+			otherPlayer}
+		ofLaps: 9.
+	self assert: aGame laps equals: 9.
+
+]
+
+{ #category : #tests }
+GameTest >> test10ManuMakes2LapsAndWin [
 
 | aGame aPlayer otherPlayer |
-aPlayer := Player named: 'Fran'.
-otherPlayer := Player named: 'Manu'.
-aGame := Game with: (Die of: 6 rolling: #(4 1))  andPlayers: { aPlayer. otherPlayer} .
-aGame playNext.
-self should: [ aGame winner]
-		raise:InvalidAction 
-		withMessageText: 'The game has not finished yet.'.
-
+aPlayer := Player named: 'Manu'.
+otherPlayer := Player named: 'Fran'.
+aGame := Game with: (Die of: 6 rolling: #(4 1)) andFields: 5  andPlayers: { aPlayer. otherPlayer} andLaps: 2.
+aGame playUntilFinished.
+self assert: ((aGame att:1) laps) equals: 2.
 ]

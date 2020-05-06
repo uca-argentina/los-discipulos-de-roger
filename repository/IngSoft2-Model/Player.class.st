@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'nameSurname',
-		'position'
+		'position',
+		'laps'
 	],
 	#category : #'IngSoft2-Model-Players'
 }
@@ -20,13 +21,26 @@ Player class >> named: aNameSurname [
 
 { #category : #comparing }
 Player >> <= aPlayer [ 
-	^position <= (aPlayer position)
+	^position >= (aPlayer position)
+]
+
+{ #category : #'as yet unclassified' }
+Player >> addLap: anInteger [ 
+	laps := laps+1.
+	position:= 0.
+	self move: anInteger.
 ]
 
 { #category : #initialization }
 Player >> initializeWithName: aNameSurname [
 	nameSurname := aNameSurname.
 	position := 0.
+	laps := 0.
+]
+
+{ #category : #'as yet unclassified' }
+Player >> laps [
+	^ laps
 ]
 
 { #category : #playing }
