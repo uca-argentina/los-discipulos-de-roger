@@ -1,6 +1,6 @@
 Extension { #name : #TestAsserter }
 
-{ #category : #'*IS2-Dice-Tests' }
+{ #category : #'*IngSoft2-Tests' }
 TestAsserter >> should: aBlock raise: anException withMessageText: aString [
 
 	self
