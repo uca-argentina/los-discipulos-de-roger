@@ -13,7 +13,7 @@ Started >> finish: aGame at: aPosition [
 { #category : #StateChanging }
 Started >> finishAndContinue: aGame at: aPosition [.
 
-	(aGame length >= aPosition) ifFalse: [ aGame finishAnStartedGame ] ifTrue:[aGame carryOut].
+	(aGame length >= aPosition) ifFalse: [ aGame finishAnStartedGame ] ifTrue:[aGame playUntilFinished].
 ]
 
 { #category : #StateChanging }

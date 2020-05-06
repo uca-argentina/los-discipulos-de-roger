@@ -11,11 +11,6 @@ Class {
 }
 
 { #category : #instanceCreation }
-Game class >> default: players [
-	^self with: Die d6 andFields: 12 andPlayers: players 
-]
-
-{ #category : #instanceCreation }
 Game class >> with: dice andFields: aNumber andPlayers: players [
 	^ self new
 		initializeDice: dice
@@ -33,20 +28,17 @@ Game class >> withFields: aNumber andPlayers: players [
 ^self with: Die d4  andFields: aNumber andPlayers: players
 ]
 
+{ #category : #instanceCreation }
+Game class >> withPlayers: players [
+	^self with: Die d6 andFields: 12 andPlayers: players 
+]
+
 { #category : #results }
 Game >> att: aPosition [
 
 "This could be used to get when is a players turn or to get the positions at the end of the game"
 
 ^playerSequence att: aPosition 
-]
-
-{ #category : #playing }
-Game >> carryOut [
-"playNext pero juega hasta que termine el juego, no sólo la próxima jugada"
-	| position |
-	position := playerSequence next rollingFor: self.
-	state finishAndContinue:self at: position.
 ]
 
 { #category : #StateChanging }
@@ -69,6 +61,11 @@ Game >> initializeDice: aDice withFields: aNumber andPlayers: players [
 	"tablePosition := players."
 ]
 
+{ #category : #'as yet unclassified' }
+Game >> isFinished [
+	^state isFinished.
+]
+
 { #category : #checking }
 Game >> isPlayedBy: aPlayer [ 
 	^ playerSequence includes: aPlayer.
@@ -82,8 +79,16 @@ Game >> length [
 { #category : #playing }
 Game >> playNext [
 	| position |
-	position := playerSequence next rollingFor: self.
+	position := playerSequence next move: self roll.
 	state finish:self at: position.
+]
+
+{ #category : #playing }
+Game >> playUntilFinished [
+"playNext pero juega hasta que termine el juego, no sólo la próxima jugada"
+	| position |
+	position := playerSequence next move: self roll.
+	state finishAndContinue:self at: position.
 ]
 
 { #category : #playing }

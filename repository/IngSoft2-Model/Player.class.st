@@ -9,13 +9,13 @@ Class {
 }
 
 { #category : #instanceCreation }
-Player class >> withNameSurname: aNameSurname [
+Player class >> named: aNameSurname [
 		aNameSurname isEmpty 
 		ifTrue: [ InstanceCreationFailed
 				signal: 'The player name cannot be blank' ].
 		
 		^self new 
-		initializeWithNameSurname: aNameSurname
+		initializeWithName: aNameSurname
 ]
 
 { #category : #comparing }
@@ -23,23 +23,23 @@ Player >> <= aPlayer [
 	^position <= (aPlayer position)
 ]
 
-{ #category : #accessing }
-Player >> getNameSurname [
-	^nameSurname
-]
-
 { #category : #initialization }
-Player >> initializeWithNameSurname: aNameSurname [
+Player >> initializeWithName: aNameSurname [
 	nameSurname := aNameSurname.
 	position := 0.
+]
+
+{ #category : #playing }
+Player >> move: aMovement [
+	^position := position + aMovement.
+]
+
+{ #category : #accessing }
+Player >> name [
+	^nameSurname
 ]
 
 { #category : #accessing }
 Player >> position [
 	^position
-]
-
-{ #category : #playing }
-Player >> rollingFor:aGame [ 
-	^position := position + aGame roll.
 ]
