@@ -20,8 +20,8 @@ Player class >> named: aNameSurname [
 ]
 
 { #category : #comparing }
-Player >> <= aPlayer [ 
-	^position >= (aPlayer position)
+Player >> >= aPlayer [ 
+	^laps >= (aPlayer laps)
 ]
 
 { #category : #'as yet unclassified' }

@@ -49,8 +49,8 @@ self assert: (aGame isFinished).
 GameTest >> test06PlayAGameAndFranWins [
 
 | aGame aPlayer otherPlayer |
-aPlayer := Player named: 'Fran'.
-otherPlayer := Player named: 'Manu'.
+aPlayer := self anotherPlayer.
+otherPlayer := self newPlayer .
 aGame := Game with: (Die of: 6 rolling: #(4 1))  andPlayers: { aPlayer. otherPlayer} .
 aGame playUntilFinished.
 self assert: (aGame winner name) equals: 'Fran'.

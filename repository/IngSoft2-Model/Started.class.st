@@ -10,11 +10,9 @@ Started >> finish: aGame at: aPosition [
 		ifFalse: [ aGame finishAnStartedGame ]
 ]
 
-{ #category : #StateChanging }
-Started >> finishAndContinue: aGame at: aPosition [
-	(self isFinished: aGame at: aPosition)
-		ifFalse: [ aGame finishAnStartedGame ]
-		ifTrue: [ aGame playUntilFinished ]
+{ #category : #'as yet unclassified' }
+Started >> isFinished [
+	^false
 ]
 
 { #category : #StateChanging }

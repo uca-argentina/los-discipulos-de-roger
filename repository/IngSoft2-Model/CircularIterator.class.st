@@ -68,5 +68,5 @@ CircularIterator >> reset [
 
 { #category : #accessing }
 CircularIterator >> sort [
-	options := options sort
+	options := options sort: [ :a :b | a>=b ]
 ]

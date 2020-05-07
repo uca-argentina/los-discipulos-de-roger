@@ -30,7 +30,7 @@ Game class >> with: aDice andPlayers: players [
 ^self with: aDice andFields: 12 andPlayers: players
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #instanceCreation }
 Game class >> with: aDie andPlayers: aCollection ofLaps: anInteger [ 
 	^self with: aDie andFields: 16  andPlayers: aCollection andLaps: anInteger 
 ]
@@ -45,7 +45,7 @@ Game class >> withPlayers: players [
 	^self with: Die d6 andFields: 12 andPlayers: players 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Game >> addLapTo: aPlayer [ 
 	aPlayer position >= length ifTrue: [ aPlayer addLap:(aPlayer position%length)].
 	^aPlayer laps
@@ -59,15 +59,15 @@ Game >> att: aPosition [
 ^playerSequence att: aPosition 
 ]
 
+{ #category : #accessing }
+Game >> dice [
+	^dice
+]
+
 { #category : #StateChanging }
 Game >> finishAnStartedGame [
 	state := Finished new.
 	playerSequence sort
-]
-
-{ #category : #accessing }
-Game >> getDice [
-	^dice
 ]
 
 { #category : #initialization }
@@ -79,17 +79,12 @@ Game >> initializeDice: aDice withFields: aNumber andPlayers: players andLaps: a
 	laps := ammountLaps. 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #results }
 Game >> isFinished [
 	^state isFinished.
 ]
 
-{ #category : #checking }
-Game >> isPlayedBy: aPlayer [ 
-	^ playerSequence includes: aPlayer.
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Game >> laps [
 	^ laps
 ]
@@ -119,9 +114,7 @@ Game >> playNext [
 Game >> playUntilFinished [
 	"playNext pero juega hasta que termine el juego, no sólo la próxima jugada"
 
-	| position |
-	position := self play.
-	state finishAndContinue: self at: position
+[self isFinished] whileFalse: [ self playNext  ]
 ]
 
 { #category : #playing }
