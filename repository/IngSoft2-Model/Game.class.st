@@ -83,7 +83,7 @@ Game >> initializeDice: aDice withFields: aNumber andPlayers: players andLaps: a
 	length := aNumber.
 	state := Started new.
 	laps := ammountLaps. 
-	scoreboard := players
+	scoreboard := Scoreboard withRows: players
 ]
 
 { #category : #accessing }
@@ -98,7 +98,7 @@ Game >> length [
 
 { #category : #playing }
 Game >> play: actualPlayer [ 
-	actualPlayer move: self roll.
+	actualPlayer updateAPlayerPosition: self roll.
 	self addLapTo: actualPlayer
 ]
 
