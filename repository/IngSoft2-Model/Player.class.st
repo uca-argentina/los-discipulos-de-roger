@@ -25,7 +25,7 @@ Player >> >= aPlayer [
 ]
 
 { #category : #'as yet unclassified' }
-Player >> addLap: anInteger [ 
+Player >> addLapAndMove: anInteger [ 
 	laps := laps+1.
 	position:= 0.
 	self move: anInteger.
@@ -45,7 +45,7 @@ Player >> laps [
 
 { #category : #playing }
 Player >> move: aMovement [
-	^position := position + aMovement.
+	position := position + aMovement.
 ]
 
 { #category : #accessing }

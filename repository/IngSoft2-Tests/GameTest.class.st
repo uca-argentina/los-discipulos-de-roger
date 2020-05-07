@@ -22,12 +22,12 @@ aPlayer := Player named: 'Fran'.
 otherPlayer := Player named: 'Manu'.
 aGame := Game with: ((Die of: 6 rolling: #(4 1)) + (Die of: 8 rolling: #(7 3)) )  andPlayers: { aPlayer. otherPlayer} .
 aGame playUntilFinished.
-self assert: aGame isFinished.
+self assert: aGame hasFinished .
 
 ]
 
 { #category : #tests }
-GameTest >> test04AboutDefaultGameLength [
+GameTest >> test04DefaultGameLengthIsTwelve [
 
 | aGame|
 aGame := Game withPlayers:#('Fran').
@@ -40,8 +40,8 @@ GameTest >> test05PlayGame [
 | aGame aPlayer |
 aPlayer := Player named: 'Fran'.
 aGame := Game with: (Die of: 6 rolling: #(4))  andPlayers: { aPlayer } .
-3 timesRepeat:  [aGame playNext]. "Hacemos una iteración en este test, en vez de llamar a carryOut, para verificar que luego de 4 tiradas de 4 el juego clasifique como terminado"
-self assert: (aGame isFinished).
+3 timesRepeat:  [aGame playATurn]. "Hacemos una iteración en este test, en vez de llamar a carryOut, para verificar que luego de 4 tiradas de 4 el juego clasifique como terminado"
+self assert: (aGame hasFinished).
 
 ]
 
@@ -80,7 +80,7 @@ GameTest >> test08CannotAskForWinnerOfAnUnfinishedGame [
 		andPlayers:
 			{aPlayer.
 			otherPlayer}.
-	aGame playNext.
+	aGame playATurn.
 	self
 		should: [ aGame winner ]
 		raise: InvalidAction
@@ -108,7 +108,7 @@ GameTest >> test10ManuMakes2LapsAndWin [
 | aGame aPlayer otherPlayer |
 aPlayer := Player named: 'Manu'.
 otherPlayer := Player named: 'Fran'.
-aGame := Game with: (Die of: 6 rolling: #(4 1)) andFields: 5  andPlayers: { aPlayer. otherPlayer} andLaps: 2.
+aGame := Game with: (Die of: 6 rolling: #(1 4)) andFields: 5  andPlayers: { aPlayer. otherPlayer} andLaps: 2.
 aGame playUntilFinished.
 self assert: ((aGame att:1) laps) equals: 2.
 ]

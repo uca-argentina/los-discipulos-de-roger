@@ -5,19 +5,20 @@ Class {
 }
 
 { #category : #StateChanging }
-Started >> finish: aGame at: aPosition [
-	(self isFinished: aGame at: aPosition)
-		ifFalse: [ aGame finishAnStartedGame ]
-]
+Started >> canFinish: aGame [
 
-{ #category : #'as yet unclassified' }
-Started >> isFinished [
-	^false
+	^ aGame laps <= aGame actualPlayer laps.
 ]
 
 { #category : #StateChanging }
-Started >> isFinished: aGame at: aPosition [
-	^ aGame laps > aPosition
+Started >> finish: aGame [
+	(self canFinish: aGame)
+		ifTrue: [ aGame finishAnStartedGame ]
+]
+
+{ #category : #'as yet unclassified' }
+Started >> hasFinished [
+	^false
 ]
 
 { #category : #StateChanging }
