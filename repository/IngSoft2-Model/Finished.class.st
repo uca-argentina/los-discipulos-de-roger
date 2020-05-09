@@ -4,8 +4,8 @@ Class {
 	#category : #'IngSoft2-Model-Game'
 }
 
-{ #category : #'as yet unclassified' }
-Finished >> isFinished [
+{ #category : #evaluation }
+Finished >> hasFinished [
 	^true.
 ]
 

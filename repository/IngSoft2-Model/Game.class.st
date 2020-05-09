@@ -5,32 +5,45 @@ Class {
 		'dice',
 		'state',
 		'playerSequence',
-		'length'
+		'length',
+		'laps',
+		'scoreboard'
 	],
 	#category : #'IngSoft2-Model-Game'
 }
 
 { #category : #instanceCreation }
-Game class >> with: dice andFields: aNumber andPlayers: players [
+Game class >> with: dice andFields: aNumber andPlayers: players andLaps: laps [
 	^ self new
 		initializeDice: dice
 		withFields: aNumber
-		andPlayers: players.
+		andPlayers: players
+		andLaps: laps.
 ]
 
 { #category : #instanceCreation }
 Game class >> with: aDice andPlayers: players [
-^self with: aDice andFields: 12 andPlayers: players
+^self with: aDice andFields: 12 andPlayers: players andLaps: 1
 ]
 
 { #category : #instanceCreation }
-Game class >> withFields: aNumber andPlayers: players [
-^self with: Die d4  andFields: aNumber andPlayers: players
+Game class >> with: aDie andPlayers: aCollection ofLaps: anInteger [ 
+	^self with: aDie andFields: 16  andPlayers: aCollection andLaps: anInteger 
 ]
 
 { #category : #instanceCreation }
 Game class >> withPlayers: players [
-	^self with: Die d6 andFields: 12 andPlayers: players 
+	^self with: Die d6 andFields: 12 andPlayers: players  andLaps: 1
+]
+
+{ #category : #accessing }
+Game >> actualPlayer [
+	^playerSequence current
+]
+
+{ #category : #playing }
+Game >> addLapTo: aPlayer [ 
+	aPlayer position >= length ifTrue: [ aPlayer addLapAndMove:(aPlayer position%length)].
 ]
 
 { #category : #results }
@@ -38,37 +51,44 @@ Game >> att: aPosition [
 
 "This could be used to get when is a players turn or to get the positions at the end of the game"
 
-^playerSequence att: aPosition 
+^scoreboard  at: aPosition 
+]
+
+{ #category : #accessing }
+Game >> dice [
+	^dice
+]
+
+{ #category : #playing }
+Game >> finishATurn [
+	state finish: self.
+	playerSequence next.
+	self updateScoreboard
 ]
 
 { #category : #StateChanging }
 Game >> finishAnStartedGame [
 	state := Finished new.
-	playerSequence sort
 ]
 
-{ #category : #accessing }
-Game >> getDice [
-	^dice
+{ #category : #results }
+Game >> hasFinished [
+	^state hasFinished.
 ]
 
 { #category : #initialization }
-Game >> initializeDice: aDice withFields: aNumber andPlayers: players [
+Game >> initializeDice: aDice withFields: aNumber andPlayers: players andLaps: ammountLaps [
 	dice := aDice.
 	playerSequence := CircularIterator cyclingOver: players.
 	length := aNumber.
 	state := Started new.
-	"tablePosition := players."
+	laps := ammountLaps. 
+	scoreboard := Scoreboard withRows: players
 ]
 
-{ #category : #'as yet unclassified' }
-Game >> isFinished [
-	^state isFinished.
-]
-
-{ #category : #checking }
-Game >> isPlayedBy: aPlayer [ 
-	^ playerSequence includes: aPlayer.
+{ #category : #accessing }
+Game >> laps [
+	^ laps
 ]
 
 { #category : #accessing }
@@ -77,18 +97,17 @@ Game >> length [
 ]
 
 { #category : #playing }
-Game >> playNext [
-	| position |
-	position := playerSequence next move: self roll.
-	state finish:self at: position.
+Game >> playATurn [
+	self actualPlayer updateAPlayerPosition: self roll.
+	self addLapTo: self actualPlayer.
+	self finishATurn.
 ]
 
 { #category : #playing }
 Game >> playUntilFinished [
-"playNext pero juega hasta que termine el juego, no sólo la próxima jugada"
-	| position |
-	position := playerSequence next move: self roll.
-	state finishAndContinue:self at: position.
+	"playNext pero juega hasta que termine el juego, no sólo la próxima jugada"
+
+[self hasFinished] whileFalse: [ self playATurn  ]
 ]
 
 { #category : #playing }
@@ -96,9 +115,9 @@ Game >> roll [
 	^dice roll.
 ]
 
-{ #category : #accessing }
-Game >> state [
-	^state
+{ #category : #results }
+Game >> updateScoreboard [
+	scoreboard sort: [ :a :b | a>=b ]
 ]
 
 { #category : #accessing }
@@ -108,5 +127,5 @@ Game >> winner [
 
 { #category : #results }
 Game >> winnerWhenFinished [
-	^playerSequence first.
+	^scoreboard first.
 ]
