@@ -41,7 +41,7 @@ GameTest >> test05PlayGame [
 	| aGame aPlayer |
 	aPlayer := self newFran.
 	aGame := Game with: (Die of: 6 rolling: #(4)) andPlayers: {aPlayer}.
-	3 timesRepeat: [ aGame playATurn ].	"Hacemos una iteración en este test, en vez de llamar a carryOut, para verificar que luego de 4 tiradas de 4 el juego clasifique como terminado"
+	3 timesRepeat: [ aGame playATurn ].
 	self assert: aGame hasFinished
 ]
 

@@ -97,15 +97,10 @@ Game >> length [
 ]
 
 { #category : #playing }
-Game >> play: actualPlayer [ 
-	actualPlayer updateAPlayerPosition: self roll.
-	self addLapTo: actualPlayer
-]
-
-{ #category : #playing }
 Game >> playATurn [
-	self play: self actualPlayer.
-	self finishATurn
+	self actualPlayer updateAPlayerPosition: self roll.
+	self addLapTo: self actualPlayer.
+	self finishATurn.
 ]
 
 { #category : #playing }
