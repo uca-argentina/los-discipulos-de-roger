@@ -5,9 +5,9 @@ Class {
 		'dice',
 		'state',
 		'playerSequence',
-		'length',
 		'laps',
-		'scoreboard'
+		'scoreboard',
+		'board'
 	],
 	#category : #'IngSoft2-Model-Game'
 }
@@ -26,6 +26,14 @@ Game class >> with: aDice andPlayers: players [
 ^self with: aDice andFields: 12 andPlayers: players andLaps: 1
 ]
 
+{ #category : #'instance creation' }
+Game class >> with: aDice andPlayers: players andBoard: aBoard [ 
+	^ self new
+		initializeDice: aDice
+		andPlayers: players
+		with: aBoard.
+]
+
 { #category : #instanceCreation }
 Game class >> with: aDie andPlayers: aCollection ofLaps: anInteger [ 
 	^self with: aDie andFields: 16  andPlayers: aCollection andLaps: anInteger 
@@ -42,8 +50,11 @@ Game >> actualPlayer [
 ]
 
 { #category : #playing }
-Game >> addLapTo: aPlayer [ 
-	aPlayer position >= length ifTrue: [ aPlayer addLapAndMove:(aPlayer position%length)].
+Game >> addLapTo: aPlayer [
+	| boardLength |
+	boardLength := self length.
+	aPlayer position >= boardLength
+		ifTrue: [ aPlayer addLapAndMove: aPlayer position % boardLength ]
 ]
 
 { #category : #results }
@@ -76,11 +87,21 @@ Game >> hasFinished [
 	^state hasFinished.
 ]
 
+{ #category : #'as yet unclassified' }
+Game >> initializeDice: aDice andPlayers: players with: aBoard [ 
+	dice := aDice.
+	playerSequence := CircularIterator cyclingOver: players.
+	board := aBoard.
+	state := Started new.
+	laps := 1. 
+	scoreboard := Scoreboard withRows: players
+]
+
 { #category : #initialization }
 Game >> initializeDice: aDice withFields: aNumber andPlayers: players andLaps: ammountLaps [
 	dice := aDice.
 	playerSequence := CircularIterator cyclingOver: players.
-	length := aNumber.
+	board := Board new withFields: aNumber.
 	state := Started new.
 	laps := ammountLaps. 
 	scoreboard := Scoreboard withRows: players
@@ -93,7 +114,7 @@ Game >> laps [
 
 { #category : #accessing }
 Game >> length [
-	^length
+	^board length 
 ]
 
 { #category : #playing }

@@ -23,7 +23,8 @@ GameTest >> test03WithMultipleDice [
 		with: (Die of: 6 rolling: #(4 1)) + (Die of: 8 rolling: #(7 3))
 		andPlayers:
 			{aPlayer.
-			otherPlayer}.
+			otherPlayer}
+		andBoard: (Board withFields: 12 of: NoEffect).
 	aGame playUntilFinished.
 	self assert: aGame hasFinished
 ]
@@ -118,4 +119,9 @@ GameTest >> test10ManuMakes2LapsAndWin [
 		andLaps: 2.
 	aGame playUntilFinished.
 	self assert: (aGame att: 1) laps equals: 2
+]
+
+{ #category : #tests }
+GameTest >> test11TriggerAWormHole [
+	
 ]
