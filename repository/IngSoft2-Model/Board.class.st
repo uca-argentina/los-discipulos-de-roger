@@ -7,22 +7,23 @@ Class {
 	#category : #'IngSoft2-Model-Board'
 }
 
-{ #category : #'instance creation' }
-Board class >> withFields: aNumberOfFields [ 
+{ #category : #'as yet unclassified' }
+Board class >> default [
+	^self withFields: BoardGenerator default picking: 12. 
+]
 
- (aNumberOfFields >0) ifFalse:[
-				InstanceCreationFailed
-				signal: 'Cannot create a board of zero or negative length' ].
-	^self new withFields: aNumberOfFields.
+{ #category : #'as yet unclassified' }
+Board class >> standardBoard [
+	self shouldBeImplemented.
 ]
 
 { #category : #'instance creation' }
-Board class >> withFields: aNumberOfFields of: aFieldClass [ 
+Board class >> withFields: aBoardGenerator picking: aNumberOfFields [
 
  (aNumberOfFields >0) ifFalse:[
 				InstanceCreationFailed
 				signal: 'Cannot create a board of zero or negative length' ].
-	^self new withFields: aNumberOfFields of: aFieldClass.
+	^self new initializeWithFields: aBoardGenerator picking: aNumberOfFields.
 ]
 
 { #category : #initialization }
@@ -36,6 +37,15 @@ Board >> fields [
 	^fields.
 ]
 
+{ #category : #initialization }
+Board >> initializeWithFields: arrayOfFields picking: aNumberOfFields [ 
+| random |
+random := Random new.
+fields:= OrderedCollection new.
+aNumberOfFields timesRepeat: [fields add: (arrayOfFields at: (random nextInt: arrayOfFields size))].
+
+]
+
 { #category : #accessing }
 Board >> length [
  ^fields size.
@@ -46,19 +56,7 @@ Board >> shuffleFields [
 	fields := fields asArray shuffle
 ]
 
-{ #category : #initialization }
-Board >> withFields: aNumberOfFields [
-	fields := LinkedList new.
-	self addFields: aNumberOfFields * 0.20 // 1 of: Wormhole.
-	self addFields: aNumberOfFields * 0.20 // 1 of: SpeedUp.
-	self addFields: aNumberOfFields * 0.10 // 1 of: Moonwalk.
-	self addFields: aNumberOfFields * 0.02 // 1 of: AtomicBomb.
-	self addFields: aNumberOfFields - fields size of: NoEffect.
-	self shuffleFields
-]
-
-{ #category : #initialization }
-Board >> withFields: aNumberOfFields of: aFieldClass [
-	fields := LinkedList new.
-	self addFields: aNumberOfFields of: aFieldClass.
+{ #category : #'as yet unclassified' }
+Board >> triggerFor: aGame [ 
+	(fields at: aGame actualPlayer position) triggerEffectFor: aGame.
 ]

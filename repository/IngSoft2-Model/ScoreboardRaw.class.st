@@ -34,7 +34,7 @@ ScoreboardRaw >> addLapAndMove: aMovement [
 { #category : #initialization }
 ScoreboardRaw >> initializeWithName: aName [
 	playerName := aName.
-	position := 0.
+	position := 1.
 	laps := 0.
 ]
 
@@ -55,7 +55,7 @@ ScoreboardRaw >> position [
 
 { #category : #playing }
 ScoreboardRaw >> resetPosition [
-	position := 0
+	position := 1
 ]
 
 { #category : #playing }

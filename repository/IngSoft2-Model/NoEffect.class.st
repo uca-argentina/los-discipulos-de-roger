@@ -1,9 +1,6 @@
 Class {
 	#name : #NoEffect,
 	#superclass : #Object,
-	#instVars : [
-		'length'
-	],
 	#category : #'IngSoft2-Model-Board'
 }
 

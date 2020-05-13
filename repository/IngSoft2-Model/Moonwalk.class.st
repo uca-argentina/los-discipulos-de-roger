@@ -1,9 +1,6 @@
 Class {
 	#name : #Moonwalk,
 	#superclass : #Object,
-	#instVars : [
-		'length'
-	],
 	#category : #'IngSoft2-Model-Board'
 }
 

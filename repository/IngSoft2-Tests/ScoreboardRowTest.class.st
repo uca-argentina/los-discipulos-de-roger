@@ -10,7 +10,7 @@ ScoreboardRowTest >> test01ScoreRowCreation [
 | aPlayer |
 aPlayer:= ScoreboardRaw ofPlayerNamed:  'FranDeGrandis'.
 self assert: aPlayer name equals: 'FranDeGrandis'.
-self assert: aPlayer position equals: 0.
+self assert: aPlayer position equals: 1.
 ]
 
 { #category : #tests }
@@ -19,7 +19,7 @@ ScoreboardRowTest >> test02ARowUpdateThePlayerPositionBy5 [
 | aPlayer |
 aPlayer := ScoreboardRaw ofPlayerNamed: 'Fran'.
 aPlayer updateAPlayerPosition: 5.
-self assert: aPlayer position equals: 5.
+self assert: aPlayer position equals: 6.
 
 ]
 
