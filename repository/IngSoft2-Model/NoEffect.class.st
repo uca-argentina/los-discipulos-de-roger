@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+NoEffect class >> createField [
+	^self new.
+]
+
+{ #category : #'as yet unclassified' }
 NoEffect >> isNoEffect [
 	^true
 ]

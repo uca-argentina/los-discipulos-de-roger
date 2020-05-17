@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+AtomicBomb class >> createField [
+	^self new.
+]
+
+{ #category : #'as yet unclassified' }
 AtomicBomb >> triggerEffectFor: aGame [
-	aGame atomicBomb.
+	aGame resetAllPlayersPosition.
 ]

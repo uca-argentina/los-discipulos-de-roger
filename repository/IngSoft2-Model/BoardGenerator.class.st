@@ -26,7 +26,7 @@ BoardGenerator class >> with: aNumberOfFields  of: aFieldClass [
 
 { #category : #'as yet unclassified' }
 BoardGenerator >> add: aNumberOfFields  of: aFieldClass [  
-	aNumberOfFields timesRepeat: [ fields add: aFieldClass new ]
+	aNumberOfFields timesRepeat: [ fields add: aFieldClass createField ]
 ]
 
 { #category : #'as yet unclassified' }

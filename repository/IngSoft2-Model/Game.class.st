@@ -46,20 +46,20 @@ Game >> actualPlayer [
 	^playerSequence current
 ]
 
-{ #category : #playing }
-Game >> addLapTo: aPlayer [
-	| boardLength |
-	boardLength := self length.
-	aPlayer position >= boardLength
-		ifTrue: [ aPlayer addLapAndMove: aPlayer position % boardLength ]
-]
-
 { #category : #results }
 Game >> att: aPosition [
 
 "This could be used to get when is a players turn or to get the positions at the end of the game"
 
 ^scoreboard  at: aPosition 
+]
+
+{ #category : #playing }
+Game >> changeLapsOf: aPlayer [
+	(self outOfBounds: aPlayer)
+		ifTrue: [ aPlayer
+				addLap: aPlayer position // self length
+				andMove: aPlayer position % self length ]
 ]
 
 { #category : #accessing }
@@ -87,7 +87,7 @@ Game >> hasFinished [
 { #category : #initialization }
 Game >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: ammountLaps [
 	dice := aDice.
-	playerSequence := CircularIterator cyclingOver: players.
+	playerSequence := CircularIterator cyclingOver: (OrderedCollection withAll: players).
 	board := aBoard.
 	state := Started new.
 	laps := ammountLaps. 
@@ -104,10 +104,23 @@ Game >> length [
 	^board length 
 ]
 
+{ #category : #'as yet unclassified' }
+Game >> moonWalk: anInteger [
+	scoreboard
+		do: [ :player | 
+			player != self actualPlayer
+				ifTrue: [ player updateAPlayerPosition: anInteger.
+					self changeLapsOf: player ] ]
+]
+
+{ #category : #playing }
+Game >> outOfBounds: aPlayer [
+	^ aPlayer position >= self length | (aPlayer position < 0)
+]
+
 { #category : #playing }
 Game >> playATurn [
-	self actualPlayer updateAPlayerPosition: self roll.
-	self addLapTo: self actualPlayer.
+	self updateActualPlayerPosition: self roll.
 	board triggerFor: self.
 	self finishATurn.
 ]
@@ -119,14 +132,25 @@ Game >> playUntilFinished [
 [self hasFinished] whileFalse: [ self playATurn  ]
 ]
 
+{ #category : #'as yet unclassified' }
+Game >> podiumOf: aScoreboardRaw [ 
+	^ scoreboard indexOf: aScoreboardRaw 
+]
+
+{ #category : #'as yet unclassified' }
+Game >> resetAllPlayersPosition [
+	scoreboard do: [ :player | player resetPosition  ]
+]
+
 { #category : #playing }
 Game >> roll [
 	^dice roll.
 ]
 
 { #category : #'as yet unclassified' }
-Game >> speedUp [
-	self actualPlayer updateAPlayerPosition: 4.
+Game >> updateActualPlayerPosition: aMovement [ 
+	self actualPlayer updateAPlayerPosition: aMovement.
+	self changeLapsOf: self actualPlayer.
 ]
 
 { #category : #results }
@@ -142,9 +166,4 @@ Game >> winner [
 { #category : #results }
 Game >> winnerWhenFinished [
 	^scoreboard first.
-]
-
-{ #category : #'as yet unclassified' }
-Game >> wormHole [
-	self actualPlayer updateAPlayerPosition: -4.
 ]

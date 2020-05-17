@@ -26,12 +26,6 @@ Board class >> withFields: aBoardGenerator picking: aNumberOfFields [
 	^self new initializeWithFields: aBoardGenerator picking: aNumberOfFields.
 ]
 
-{ #category : #initialization }
-Board >> addFields: anAmount of: fieldClass [
-	anAmount  timesRepeat: [ fields add: fieldClass new. ].
-
-]
-
 { #category : #accessing }
 Board >> fields [
 	^fields.
@@ -51,12 +45,7 @@ Board >> length [
  ^fields size.
 ]
 
-{ #category : #initialization }
-Board >> shuffleFields [
-	fields := fields asArray shuffle
-]
-
 { #category : #'as yet unclassified' }
 Board >> triggerFor: aGame [ 
-	(fields at: aGame actualPlayer position) triggerEffectFor: aGame.
+	(fields at: (aGame actualPlayer position)+1) triggerEffectFor: aGame.
 ]
