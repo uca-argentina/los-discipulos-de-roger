@@ -104,13 +104,19 @@ Game >> length [
 	^board length 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Game >> moonWalk: anInteger [
 	scoreboard
 		do: [ :player | 
 			player != self actualPlayer
-				ifTrue: [ player updateAPlayerPosition: anInteger.
-					self changeLapsOf: player ] ]
+				ifTrue:
+					[ self move: anInteger toThis: player ] ]
+]
+
+{ #category : #playing }
+Game >> move: anInteger toThis: player [
+	player updateAPlayerPosition: anInteger.
+	^ self changeLapsOf: player
 ]
 
 { #category : #playing }
@@ -132,12 +138,12 @@ Game >> playUntilFinished [
 [self hasFinished] whileFalse: [ self playATurn  ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Game >> podiumOf: aScoreboardRaw [ 
 	^ scoreboard indexOf: aScoreboardRaw 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Game >> resetAllPlayersPosition [
 	scoreboard do: [ :player | player resetPosition  ]
 ]
@@ -147,10 +153,9 @@ Game >> roll [
 	^dice roll.
 ]
 
-{ #category : #'as yet unclassified' }
-Game >> updateActualPlayerPosition: aMovement [ 
-	self actualPlayer updateAPlayerPosition: aMovement.
-	self changeLapsOf: self actualPlayer.
+{ #category : #playing }
+Game >> updateActualPlayerPosition: aMovement [
+	self move: aMovement toThis: self actualPlayer
 ]
 
 { #category : #results }

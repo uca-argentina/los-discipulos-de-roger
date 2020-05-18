@@ -24,23 +24,23 @@ BoardGenerator class >> with: aNumberOfFields  of: aFieldClass [
 		initializeWith: aNumberOfFields of: aFieldClass.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 BoardGenerator >> add: aNumberOfFields  of: aFieldClass [  
 	aNumberOfFields timesRepeat: [ fields add: aFieldClass createField ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 BoardGenerator >> at: anIndex [
 	^fields at: anIndex 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 BoardGenerator >> initializeWith: aNumberOfFields  of: aFieldClass [  
 	fields := OrderedCollection new.
 	self add: aNumberOfFields   of: aFieldClass 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 BoardGenerator >> size [ 
 ^fields size
 ]

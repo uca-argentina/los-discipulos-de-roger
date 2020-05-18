@@ -9,7 +9,7 @@ Wormhole class >> createField [
 	^self new.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Wormhole >> triggerEffectFor: aGame [
 	aGame updateActualPlayerPosition: -4.
 ]

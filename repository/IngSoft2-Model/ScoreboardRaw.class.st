@@ -19,12 +19,12 @@ ScoreboardRaw class >> ofPlayerNamed: aNameSurname [
 		initializeWithName: aNameSurname
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #comparing }
 ScoreboardRaw >> != aScoreboardRaw [ 
 	^ (self = aScoreboardRaw) not
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #comparing }
 ScoreboardRaw >> = aScoreboardRaw [ 
 	^ (playerName = aScoreboardRaw playerName)
 ]
@@ -36,24 +36,23 @@ ScoreboardRaw >> >= aPlayer [
 
 { #category : #playing }
 ScoreboardRaw >> addLap: lapsToMove andMove: aMovement [
-	
+
 	laps := laps + lapsToMove.
 	self resetPosition.
 	self updateAPlayerPosition: aMovement.
 	self checkLapCount.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 ScoreboardRaw >> checkLapCount [
 	laps < 0
-		ifTrue: [ laps := 0.
-			self resetPosition ]
+		ifTrue: [ self resetLapsAndPosition ]
 ]
 
 { #category : #initialization }
 ScoreboardRaw >> initializeWithName: aName [
 	playerName := aName.
-	position := 1.
+	position := 0.
 	laps := 0.
 ]
 
@@ -67,7 +66,7 @@ ScoreboardRaw >> name [
 	^playerName
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 ScoreboardRaw >> playerName [
 	^ playerName
 ]
@@ -75,6 +74,12 @@ ScoreboardRaw >> playerName [
 { #category : #accessing }
 ScoreboardRaw >> position [
 	^position
+]
+
+{ #category : #playing }
+ScoreboardRaw >> resetLapsAndPosition [
+	laps := 0.
+	self resetPosition
 ]
 
 { #category : #playing }

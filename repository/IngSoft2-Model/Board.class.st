@@ -45,7 +45,7 @@ Board >> length [
  ^fields size.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Board >> triggerFor: aGame [ 
 	(fields at: (aGame actualPlayer position)+1) triggerEffectFor: aGame.
 ]

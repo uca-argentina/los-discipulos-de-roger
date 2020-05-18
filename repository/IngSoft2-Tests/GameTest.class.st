@@ -137,7 +137,7 @@ GameTest >> test11TriggerAWormHole [
 		andPlayers: {actualPlayer}
 		andLaps: 1.
 	aGame playATurn.
-	self assert: actualPlayer position equals: 3
+	self assert: actualPlayer position equals: 2
 ]
 
 { #category : #tests }
@@ -150,7 +150,8 @@ GameTest >> test12TriggerASpeedUp [
 		andPlayers: {actualPlayer}
 		andLaps: 1.
 	aGame playATurn.
-	self assert: actualPlayer position equals: 1
+	self assert: actualPlayer position equals: 0.
+	self assert: actualPlayer laps equals: 1
 ]
 
 { #category : #tests }
@@ -181,17 +182,19 @@ GameTest >> test14TriggerAaMoonWalkAndAPlayerMoves [
 			otherPlayer}
 		andLaps: 1.
 	2 timesRepeat: [ aGame playATurn ].
-	self assert: onePlayer position equals: (7 + (boardGen at: 1) fieldsToGoBack).
+	self assert: onePlayer position equals: (6 + (boardGen at: 1) fieldsToGoBack).
 ]
 
 { #category : #tests }
 GameTest >> test15TriggerAnAtomicBomb [
-	| actualPlayer aGame |
+	| actualPlayer aGame otherPlayer |
 	actualPlayer :=self playerNamed: 'Manu'.
+	otherPlayer := self playerNamed: 'Fran'.
+	otherPlayer  updateAPlayerPosition: 5.
 	aGame := Game
 		with: (Die of: 6 rolling: #(6))
 		andBoard: (Board withFields: (BoardGenerator with: 1 of: AtomicBomb) picking: 10)
-		andPlayers: {actualPlayer }
+		andPlayers: {actualPlayer . otherPlayer }
 		andLaps: 1.
 	aGame playATurn.
 	self assert: actualPlayer position equals: 0
