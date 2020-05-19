@@ -9,7 +9,7 @@ SpeedUp class >> createField [
 	^self new.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 SpeedUp >> triggerEffectFor: aGame [
 	aGame updateActualPlayerPosition: 4.
 ]

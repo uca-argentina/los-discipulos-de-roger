@@ -9,7 +9,7 @@ AtomicBomb class >> createField [
 	^self new.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 AtomicBomb >> triggerEffectFor: aGame [
 	aGame resetAllPlayersPosition.
 ]

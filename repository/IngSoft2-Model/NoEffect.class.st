@@ -9,11 +9,6 @@ NoEffect class >> createField [
 	^self new.
 ]
 
-{ #category : #'as yet unclassified' }
-NoEffect >> isNoEffect [
-	^true
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 NoEffect >> triggerEffectFor: aGame [
 ]

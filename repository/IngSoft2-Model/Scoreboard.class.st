@@ -18,7 +18,7 @@ Scoreboard >> at: anIndex [
 	^rowList at: anIndex 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accesing }
 Scoreboard >> do: aBlockClosure [ 
 	rowList do: aBlockClosure.
 ]
@@ -28,7 +28,7 @@ Scoreboard >> first [
 	^rowList first
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accesing }
 Scoreboard >> indexOf: aScoreboardRaw [
 	(rowList includes: aScoreboardRaw) ifFalse: [ InvalidAction signal: 'El player no esta jugando.' ].
 	^ rowList indexOf: aScoreboardRaw
