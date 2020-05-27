@@ -136,8 +136,9 @@ GameTest >> test11TriggerAWormHole [
 		andBoard: (Board withFields: (BoardGenerator with: 1 of: Wormhole) picking: 10)
 		andPlayers: {actualPlayer}
 		andLaps: 1.
+	self assert: actualPlayer position equals: 0.
 	aGame playATurn.
-	self assert: actualPlayer position equals: 2
+	self assert: actualPlayer position equals: 2.
 ]
 
 { #category : #tests }

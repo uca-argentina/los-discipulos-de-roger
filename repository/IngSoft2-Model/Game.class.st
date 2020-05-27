@@ -87,11 +87,11 @@ Game >> hasFinished [
 { #category : #initialization }
 Game >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: ammountLaps [
 	dice := aDice.
-	playerSequence := CircularIterator cyclingOver: (OrderedCollection withAll: players).
+	playerSequence := CircularIterator cyclingOver: (players copy).
 	board := aBoard.
 	state := Started new.
 	laps := ammountLaps. 
-	scoreboard := Scoreboard withRows: players
+	scoreboard := Scoreboard withRows: players copy
 ]
 
 { #category : #accessing }

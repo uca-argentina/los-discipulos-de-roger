@@ -25,11 +25,9 @@ BoardTest >> test02CannotCreateABoardWithZeroOrNegativeFields [
 
 { #category : #tests }
 BoardTest >> test03aBoardWithAStandardBoardGeneratorHas50Fields [
-
-
-| aBoard |
-aBoard := Board withFields: self boardGeneratorStandard picking: 50 .
-self assert: aBoard length equals: 50
+	| aBoard |
+	aBoard := Board withFields: self boardGeneratorStandard picking: 50.
+	self assert: aBoard length equals: 50
 ]
 
 { #category : #tests }
@@ -41,9 +39,7 @@ BoardTest >> testBoardGeneratorGenerates100Fields [
 
 { #category : #tests }
 BoardTest >> testBoardGeneratorGenerates48NoEffects [
-
-
-| aBoardGenerator |
-aBoardGenerator := BoardGenerator with: 48 of: NoEffect.
-self assert: aBoardGenerator size equals: 48.
+	| aBoardGenerator |
+	aBoardGenerator := BoardGenerator with: 48 of: NoEffect.
+	self assert: aBoardGenerator size equals: 48
 ]
