@@ -25,7 +25,7 @@ ScoreboardRaw >> != aScoreboardRaw [
 ]
 
 { #category : #comparing }
-ScoreboardRaw >> = aScoreboardRaw [ 
+ScoreboardRaw >> = aScoreboardRaw [  
 	^ (playerName = aScoreboardRaw playerName)
 ]
 

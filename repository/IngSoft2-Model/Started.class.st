@@ -13,7 +13,7 @@ Started >> canFinish: aGame [
 { #category : #StateChanging }
 Started >> finish: aGame [
 	(self canFinish: aGame)
-		ifTrue: [ aGame finishAnStartedGame ]
+		ifTrue: [ aGame finishStartedGame ]
 ]
 
 { #category : #'as yet unclassified' }

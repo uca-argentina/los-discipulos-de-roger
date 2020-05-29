@@ -18,6 +18,7 @@ ScoreboardRowTest >> test02ARowUpdateThePlayerPositionBy5 [
 
 | aPlayer |
 aPlayer := ScoreboardRaw ofPlayerNamed: 'Fran'.
+self assert: aPlayer position equals: 0.
 aPlayer updateAPlayerPosition: 5.
 self assert: aPlayer position equals: 5.
 

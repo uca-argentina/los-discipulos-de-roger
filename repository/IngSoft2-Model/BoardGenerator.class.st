@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-BoardGenerator class >> default [ 
+BoardGenerator class >> ucaGameDefault [ 
 	| aBoardGenerator |
 	aBoardGenerator := self with: 48 of: NoEffect.
 	aBoardGenerator add: 20 of: SpeedUp.
@@ -25,13 +25,32 @@ BoardGenerator class >> with: aNumberOfFields  of: aFieldClass [
 ]
 
 { #category : #accessing }
-BoardGenerator >> add: aNumberOfFields  of: aFieldClass [  
-	aNumberOfFields timesRepeat: [ fields add: aFieldClass createField ]
+BoardGenerator >> add: aNumberOfFields  of: aField [  
+	aNumberOfFields timesRepeat: [ fields add: aField]
 ]
 
 { #category : #accessing }
 BoardGenerator >> at: anIndex [
 	^fields at: anIndex 
+]
+
+{ #category : #'as yet unclassified' }
+BoardGenerator >> buildOf: aNumberOfFields [
+	| random arrayOfFields |
+	aNumberOfFields > 0
+		ifFalse: [ InstanceCreationFailed
+				signal: 'Cannot create a board of zero or negative length' ].
+	random := Random new.
+	arrayOfFields := OrderedCollection new.
+	aNumberOfFields
+		timesRepeat: [ arrayOfFields add: (fields at: (random nextInt: fields  size)) ].
+	^ Board withFields: arrayOfFields
+]
+
+{ #category : #'as yet unclassified' }
+BoardGenerator >> completeFields [
+
+fields size <100 ifTrue: [ self add: (100 - fields size) of: NoEffect new  ]
 ]
 
 { #category : #initialization }
