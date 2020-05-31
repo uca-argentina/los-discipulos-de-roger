@@ -11,5 +11,5 @@ SpeedUp class >> createField [
 
 { #category : #playing }
 SpeedUp >> triggerEffectFor: aGame [
-	aGame updateActualPlayerPosition: 4.
+	aGame moveActualPlayerForward: 4.
 ]

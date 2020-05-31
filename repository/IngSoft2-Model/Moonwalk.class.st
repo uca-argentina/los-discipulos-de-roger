@@ -9,13 +9,13 @@ Class {
 
 { #category : #'as yet unclassified' }
 Moonwalk class >> createField [
-	^self new
-				initializeWithN: ((Random new) nextInt: 5).
+	^self createField:((Random new) nextInt: 5).
 ]
 
-{ #category : #accessing }
-Moonwalk >> fieldsToGoBack [
-	^ fieldsToMove
+{ #category : #'as yet unclassified' }
+Moonwalk class >> createField: anInteger [
+	^self new
+				initializeWithN: anInteger.
 ]
 
 { #category : #initialization }

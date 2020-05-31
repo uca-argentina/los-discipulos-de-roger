@@ -11,5 +11,5 @@ Wormhole class >> createField [
 
 { #category : #playing }
 Wormhole >> triggerEffectFor: aGame [
-	aGame updateActualPlayerPosition: -4.
+	aGame moveActualPlayerBackwards: 4.
 ]

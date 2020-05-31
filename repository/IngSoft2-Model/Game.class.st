@@ -125,8 +125,18 @@ Game >> moonWalk: anInteger [
 
 { #category : #playing }
 Game >> move: anInteger toThis: player [
-	player updateAPlayerPosition: anInteger.
+	player move: anInteger.
 	^ self changeLapsOf: player
+]
+
+{ #category : #playing }
+Game >> moveActualPlayerBackwards: aMovement [
+	self move: aMovement*(-1) toThis: self actualPlayer
+]
+
+{ #category : #playing }
+Game >> moveActualPlayerForward: aMovement [
+	self move: aMovement toThis: self actualPlayer
 ]
 
 { #category : #playing }
@@ -136,7 +146,8 @@ Game >> outOfBounds: aPlayer [
 
 { #category : #playing }
 Game >> playTurn [
-	self updateActualPlayerPosition: self roll.
+	state canPlay ifFalse:[ InvalidAction signal: 'Cannot play a finished game.'].
+	self moveActualPlayerForward: self roll.
 	board triggerFor: self.
 	self finishTurn.
 ]
@@ -161,11 +172,6 @@ Game >> resetAllPlayersPosition [
 { #category : #playing }
 Game >> roll [
 	^dice roll.
-]
-
-{ #category : #playing }
-Game >> updateActualPlayerPosition: aMovement [
-	self move: aMovement toThis: self actualPlayer
 ]
 
 { #category : #results }
