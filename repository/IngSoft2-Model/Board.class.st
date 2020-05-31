@@ -8,11 +8,6 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-Board class >> standardBoard [
-	self shouldBeImplemented.
-]
-
-{ #category : #'as yet unclassified' }
 Board class >> ucaGameDefault [
 	^ BoardGenerator ucaGameDefault buildOf: 12
 ]

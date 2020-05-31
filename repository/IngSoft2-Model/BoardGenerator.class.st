@@ -29,11 +29,6 @@ BoardGenerator >> add: aNumberOfFields  of: aField [
 	aNumberOfFields timesRepeat: [ fields add: aField]
 ]
 
-{ #category : #accessing }
-BoardGenerator >> at: anIndex [
-	^fields at: anIndex 
-]
-
 { #category : #'as yet unclassified' }
 BoardGenerator >> buildOf: aNumberOfFields [
 	| random arrayOfFields |

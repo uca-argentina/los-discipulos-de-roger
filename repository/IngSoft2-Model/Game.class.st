@@ -27,18 +27,8 @@ Game class >> with: dice on: aBoard playedBy: players withLaps: laps [
 ]
 
 { #category : #'as yet unclassified' }
-Game class >> with: aDie playedBy: aCollection [ 
-	^self with: aDie on: Board ucaGameDefault  playedBy: aCollection withLaps: 1
-]
-
-{ #category : #'as yet unclassified' }
 Game class >> with: aDice playedBy: aCollection on: aBoard [ 
 	^self with: aDice on: aBoard playedBy: aCollection  withLaps: 1.
-]
-
-{ #category : #'as yet unclassified' }
-Game class >> with: aDie playedBy: aCollection withLaps: anInteger [ 
-	^self with: aDie on: Board ucaGameDefault  playedBy:aCollection  withLaps: anInteger  .
 ]
 
 { #category : #accessing }
