@@ -42,32 +42,30 @@ BoardGeneratorTest >> setUp [
 { #category : #tests }
 BoardGeneratorTest >> test02CannotCreateABoardWithZeroOrNegativeFields [
 	self
-		should: [ BoardGenerator new buildOf:0 ]
+		should: [ BoardGenerator new buildOf: 0 ]
 		raise: InstanceCreationFailed
 		withMessageText: 'Cannot create a board of zero or negative length'
 ]
 
 { #category : #tests }
 BoardGeneratorTest >> testBoardGeneratorCompletedHave100Fields [
-	| aBoardGenerator |
-	aBoardGenerator := BoardGenerator with: 20 of: (Wormhole new).
-	self assert: (aBoardGenerator completeFields) size equals: 100
+	aBoardGenerator := BoardGenerator with: 20 of: Wormhole new.
+	self assert: aBoardGenerator completeFields size equals: 100
 ]
 
 { #category : #tests }
 BoardGeneratorTest >> testBoardHasCorrectDistribution [
-
 	| aBoard |
 	2000
 		timesRepeat: [ aBoard := aBoardGenerator buildOf: 100.
 			countNoEffects add: (self count: NoEffect of: aBoard).
 			countAtomicBomb add: (self count: AtomicBomb of: aBoard).
 			countMoonwalk add: (self count: Moonwalk of: aBoard).
-			countspeedUp add: (self count: SpeedUp  of: aBoard).
-			countWormhole add: (self count: Wormhole  of: aBoard) ].
+			countspeedUp add: (self count: SpeedUp of: aBoard).
+			countWormhole add: (self count: Wormhole of: aBoard) ].
 	self assert: (self averageOf: countNoEffects) equals: 48.
 	self assert: (self averageOf: countAtomicBomb) equals: 2.
 	self assert: (self averageOf: countWormhole) equals: 20.
 	self assert: (self averageOf: countspeedUp) equals: 20.
-	self assert: (self averageOf: countMoonwalk) equals: 10.
+	self assert: (self averageOf: countMoonwalk) equals: 10
 ]

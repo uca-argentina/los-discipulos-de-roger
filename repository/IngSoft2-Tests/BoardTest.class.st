@@ -7,7 +7,7 @@ Class {
 { #category : #tests }
 BoardTest >> boardGeneratorStandard [
 	| aBoardGenerator |
-	aBoardGenerator:= BoardGenerator with: 20 of: SpeedUp new.
+	aBoardGenerator := BoardGenerator with: 20 of: SpeedUp new.
 	aBoardGenerator add: 20 of: Wormhole new.
 	aBoardGenerator add: 10 of: Moonwalk new.
 	aBoardGenerator add: 2 of: AtomicBomb new.

@@ -9,7 +9,6 @@ Class {
 
 { #category : #tests }
 CircularIteratorTest >> testCantCreateWithEmptyCollection [
-
 	self
 		should: [ CircularIterator cyclingOver: #() ]
 		raise: InstanceCreationFailed
@@ -18,11 +17,8 @@ CircularIteratorTest >> testCantCreateWithEmptyCollection [
 
 { #category : #tests }
 CircularIteratorTest >> testCurrent [
-
 	| iterator |
-
 	iterator := CircularIterator cyclingOver: #(1 2 3).
-
 	self assert: iterator current equals: 1.
 	iterator next.
 	self assert: iterator current equals: 2.
@@ -36,11 +32,8 @@ CircularIteratorTest >> testCurrent [
 
 { #category : #tests }
 CircularIteratorTest >> testIncludes [
-
 	| iterator |
-
 	iterator := CircularIterator cyclingOver: #(1 2 3).
-
 	self
 		assert: (iterator includes: 1);
 		assert: (iterator includes: 2);
@@ -50,15 +43,11 @@ CircularIteratorTest >> testIncludes [
 
 { #category : #tests }
 CircularIteratorTest >> testReset [
-
 	| iterator |
-
 	iterator := CircularIterator cyclingOver: #(1 2 3).
-
 	self assert: iterator current equals: 1.
 	iterator next.
 	self assert: iterator current equals: 2.
 	iterator reset.
-	self assert: iterator current equals: 1.
-
+	self assert: iterator current equals: 1
 ]
