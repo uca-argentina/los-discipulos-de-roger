@@ -29,14 +29,16 @@ Scoreboard >> first [
 ]
 
 { #category : #accesing }
-Scoreboard >> indexOf: aScoreboardRaw [
-	(rowList includes: aScoreboardRaw) ifFalse: [ InvalidAction signal: 'El player no esta jugando.' ].
-	^ rowList indexOf: aScoreboardRaw
+Scoreboard >> indexOf: aName [
+	| aRow |
+	aRow:= ScoreboardRaw ofPlayerNamed: aName.
+	(rowList includes: aRow) ifFalse: [ InvalidAction signal: 'El player no esta jugando.' ].
+	^ rowList indexOf: aRow
 ]
 
 { #category : #initialization }
 Scoreboard >> initializeWithRows: rows [ 
-	rowList := rows
+	rowList:= rows 
 ]
 
 { #category : #accesing }

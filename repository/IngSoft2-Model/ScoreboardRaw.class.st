@@ -25,7 +25,7 @@ ScoreboardRaw >> != aScoreboardRaw [
 ]
 
 { #category : #comparing }
-ScoreboardRaw >> = aScoreboardRaw [ 
+ScoreboardRaw >> = aScoreboardRaw [  
 	^ (playerName = aScoreboardRaw playerName)
 ]
 
@@ -39,7 +39,7 @@ ScoreboardRaw >> addLap: lapsToMove andMove: aMovement [
 
 	laps := laps + lapsToMove.
 	self resetPosition.
-	self updateAPlayerPosition: aMovement.
+	self move: aMovement.
 	self checkLapCount.
 ]
 
@@ -59,6 +59,11 @@ ScoreboardRaw >> initializeWithName: aName [
 { #category : #accessing }
 ScoreboardRaw >> laps [
 	^ laps
+]
+
+{ #category : #playing }
+ScoreboardRaw >> move: aMovement [
+	position := position + aMovement.
 ]
 
 { #category : #accessing }
@@ -85,9 +90,4 @@ ScoreboardRaw >> resetLapsAndPosition [
 { #category : #playing }
 ScoreboardRaw >> resetPosition [
 	position := 0.
-]
-
-{ #category : #playing }
-ScoreboardRaw >> updateAPlayerPosition: aMovement [
-	position := position + aMovement.
 ]

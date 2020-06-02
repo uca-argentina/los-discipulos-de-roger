@@ -4,12 +4,7 @@ Class {
 	#category : #'IngSoft2-Model-Board'
 }
 
-{ #category : #'as yet unclassified' }
-Wormhole class >> createField [
-	^self new.
-]
-
 { #category : #playing }
 Wormhole >> triggerEffectFor: aGame [
-	aGame updateActualPlayerPosition: -4.
+	aGame moveActualPlayerBackwards: 4.
 ]

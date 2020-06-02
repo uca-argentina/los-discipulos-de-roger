@@ -10,10 +10,15 @@ Started >> canFinish: aGame [
 	^ aGame laps <= aGame actualPlayer laps.
 ]
 
+{ #category : #'as yet unclassified' }
+Started >> canPlay [
+	^true.
+]
+
 { #category : #StateChanging }
 Started >> finish: aGame [
 	(self canFinish: aGame)
-		ifTrue: [ aGame finishAnStartedGame ]
+		ifTrue: [ aGame finishStartedGame ]
 ]
 
 { #category : #'as yet unclassified' }
