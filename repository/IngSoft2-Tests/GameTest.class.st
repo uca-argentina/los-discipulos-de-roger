@@ -48,12 +48,13 @@ GameTest >> positionOf: aPlayer in: aGame [
 { #category : #running }
 GameTest >> setUp [
 	"Hooks that subclasses may override to define the fixture of test."
+
 	players := OrderedCollection withAll: {'Fran' . 'Manu'}.
 	die := Die of: 6 rolling: #(4 1).
 	aNoEffect := NoEffect new.
 	aWormhole := Wormhole new.
-		anAtomicBomb := AtomicBomb new.
-			aSpeedUp := SpeedUp new.
+	anAtomicBomb := AtomicBomb new.
+	aSpeedUp := SpeedUp new
 ]
 
 { #category : #tests }
@@ -390,6 +391,7 @@ GameTest >> test22DueloDeTitanes [
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 2.
 	aGame playTurn.	"10p2 - Atomic Bomb!"	"1"
 	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	self assert: (self lapsOf: 'Manu' in: aGame) equals: 1.
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
 	aGame playTurn.	"11p1"	"4"
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
