@@ -12,6 +12,22 @@ Class {
 	#category : #'IngSoft2-Tests-Game-Tests'
 }
 
+{ #category : #tests }
+GameTest >> finalBoard [
+	| anArrayOfFields aMoonwalk |
+	aMoonwalk:= Moonwalk createField:5.
+	anArrayOfFields := OrderedCollection new.
+	5 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	anArrayOfFields add: aWormhole.
+	anArrayOfFields add: aSpeedUp.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: anAtomicBomb.
+	2 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	anArrayOfFields add: aMoonwalk.
+	7 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	^ anArrayOfFields
+]
+
 { #category : #'as yet unclassified' }
 GameTest >> lapsOf: aPlayer in: aGame [
 	^ (self whereIs: aPlayer in: aGame) laps
@@ -322,23 +338,92 @@ GameTest >> test21ManuTriggersAtomicBombAndLapCountDoesNotDiminishForFran [
 
 { #category : #tests }
 GameTest >> test22DueloDeTitanes [
-	| aGame  anArrayOfFields  |
-	anArrayOfFields := OrderedCollection new.
-	anArrayOfFields add: aNoEffect.
-	anArrayOfFields add: anAtomicBomb.
-	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	| aGame  anArrayOfFields |
 	aGame := Game
-		with: (Die of: 10 rolling: #(10 1))
-		on: (Board withFields: anArrayOfFields)
+		with: (Die of: 6 rolling: #(4 6 1 1))
+		on: (Board withFields: self finalBoard)
 		playedBy: players
 		withLaps: 2.
-	self assert: aGame actualPlayer position equals: 0.
-	aGame playTurn.
-	self assert: (aGame atPodium: 1) position equals: 4.
-	self assert: (aGame atPodium: 1) laps equals: 1.
-	aGame playTurn.
-	self assert: aGame actualPlayer position equals: 0.
-	self assert: aGame actualPlayer laps equals: 1
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn. "1p1" "4"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	
+	aGame playTurn."1p2 - SpeedUp" "6"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 10.
+	
+	aGame playTurn."2p1" "1"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1.  
+	
+	aGame playTurn."2p2 - Moonwalk!" "1"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 11.	
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	
+	aGame playTurn."3p1" "4"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	
+	aGame playTurn."3p2" "6"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 17.
+	
+	aGame playTurn."4p1 - Wormhole!" "1"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1.
+	
+	aGame playTurn."4p2" "1"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 18.
+	
+	aGame playTurn."5p1" "4"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn."5p2" "6"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 1.
+	self assert: (self lapsOf: 'Manu' in: aGame) equals: 1.
+	aGame playTurn."6p1" "1"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 2.
+	aGame playTurn."6p2" "1"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 2.
+	aGame playTurn."7p1 - SpeedUp!" "4"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 10.
+	
+	aGame playTurn."7p2 - Atomic Bomb!" "6"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self lapsOf: 'Manu' in: aGame) equals: 1.
+	
+	aGame playTurn."8p1" "1"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn."8p2" "1"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 1.
+	aGame playTurn."9p1 - Wormhole" "4"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn."9p2" "6"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 7.
+	aGame playTurn."10p1" "1"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 2.
+	aGame playTurn."10p2" "1"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	
+	aGame playTurn."11p1 - Wormhole!" "4"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	aGame playTurn."11p2" "6"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 10.
+	aGame playTurn."12p1" "1"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn."12p2" "1"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 11.
+	aGame playTurn."13p1" "4"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	aGame playTurn."13p2" "6"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 17.
+	aGame playTurn."14p1" "1"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn."14p2" "1"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 18.
+	aGame playTurn."15p1" "4"
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn."15p2" "6"
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 1.
+	self assert: aGame hasFinished.
+	
+
 ]
 
 { #category : #tests }
