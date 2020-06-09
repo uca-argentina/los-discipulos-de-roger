@@ -7,7 +7,8 @@ Class {
 		'playerSequence',
 		'laps',
 		'scoreboard',
-		'board'
+		'board',
+		'appliedCards'
 	],
 	#category : #'IngSoft2-Model-Game'
 }
@@ -100,7 +101,7 @@ Game >> length [
 Game >> makePlayerRows: aCollection [ 
 	| rowList |
 	rowList := OrderedCollection new.
-	aCollection  do: [ :playerName | rowList add: (ScoreboardRaw ofPlayerNamed: playerName )].
+	aCollection  do: [ :playerName | rowList add: (Player ofPlayerNamed: playerName )].
 	^rowList 
 ]
 

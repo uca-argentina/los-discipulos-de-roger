@@ -1,16 +1,17 @@
 Class {
-	#name : #ScoreboardRaw,
+	#name : #Player,
 	#superclass : #Object,
 	#instVars : [
 		'playerName',
 		'position',
-		'laps'
+		'laps',
+		'cardDeck'
 	],
 	#category : #'IngSoft2-Model-Scoreboard'
 }
 
 { #category : #instanceCreation }
-ScoreboardRaw class >> ofPlayerNamed: aNameSurname [
+Player class >> ofPlayerNamed: aNameSurname [
 		aNameSurname isEmpty 
 		ifTrue: [ InstanceCreationFailed
 				signal: 'The player name cannot be blank' ].
@@ -20,22 +21,22 @@ ScoreboardRaw class >> ofPlayerNamed: aNameSurname [
 ]
 
 { #category : #comparing }
-ScoreboardRaw >> != aScoreboardRaw [ 
+Player >> != aScoreboardRaw [ 
 	^ (self = aScoreboardRaw) not
 ]
 
 { #category : #comparing }
-ScoreboardRaw >> = aScoreboardRaw [  
+Player >> = aScoreboardRaw [  
 	^ (playerName = aScoreboardRaw playerName)
 ]
 
 { #category : #comparing }
-ScoreboardRaw >> >= aPlayer [ 
+Player >> >= aPlayer [ 
 	^laps > (aPlayer laps) | (laps = aPlayer laps & (position > aPlayer position))
 ]
 
 { #category : #playing }
-ScoreboardRaw >> addLap: lapsToMove andMove: aMovement [
+Player >> addLap: lapsToMove andMove: aMovement [
 
 	laps := laps + lapsToMove.
 	self resetPosition.
@@ -43,51 +44,62 @@ ScoreboardRaw >> addLap: lapsToMove andMove: aMovement [
 	self checkLapCount.
 ]
 
+{ #category : #'as yet unclassified' }
+Player >> cardCount [
+	^cardDeck size
+]
+
 { #category : #playing }
-ScoreboardRaw >> checkLapCount [
+Player >> checkLapCount [
 	laps < 0
 		ifTrue: [ self resetLapsAndPosition ]
 ]
 
 { #category : #initialization }
-ScoreboardRaw >> initializeWithName: aName [
+Player >> initializeWithName: aName [
+	self initializeWithName: aName andCards: (HandGenerator withCards: 2). 
+]
+
+{ #category : #initialization }
+Player >> initializeWithName: aName andCards: aCardGenerator [
 	playerName := aName.
 	position := 0.
 	laps := 0.
+	cardDeck := aCardGenerator.
 ]
 
 { #category : #accessing }
-ScoreboardRaw >> laps [
+Player >> laps [
 	^ laps
 ]
 
 { #category : #playing }
-ScoreboardRaw >> move: aMovement [
+Player >> move: aMovement [
 	position := position + aMovement.
 ]
 
 { #category : #accessing }
-ScoreboardRaw >> name [
+Player >> name [
 	^playerName
 ]
 
 { #category : #accessing }
-ScoreboardRaw >> playerName [
+Player >> playerName [
 	^ playerName
 ]
 
 { #category : #accessing }
-ScoreboardRaw >> position [
+Player >> position [
 	^position
 ]
 
 { #category : #playing }
-ScoreboardRaw >> resetLapsAndPosition [
+Player >> resetLapsAndPosition [
 	laps := 0.
 	self resetPosition
 ]
 
 { #category : #playing }
-ScoreboardRaw >> resetPosition [
+Player >> resetPosition [
 	position := 0.
 ]

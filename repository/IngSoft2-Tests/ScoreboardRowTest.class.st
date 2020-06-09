@@ -7,15 +7,16 @@ Class {
 { #category : #tests }
 ScoreboardRowTest >> test01ScoreRowCreation [
 	| aPlayer |
-	aPlayer := ScoreboardRaw ofPlayerNamed: 'FranDeGrandis'.
+	aPlayer := Player ofPlayerNamed: 'FranDeGrandis'.
 	self assert: aPlayer name equals: 'FranDeGrandis'.
-	self assert: aPlayer position equals: 0
+	self assert: aPlayer position equals: 0.
+	self assert: aPlayer cardCount equals: 2.
 ]
 
 { #category : #tests }
 ScoreboardRowTest >> test02ARowUpdateThePlayerPositionBy5 [
 	| aPlayer |
-	aPlayer := ScoreboardRaw ofPlayerNamed: 'Fran'.
+	aPlayer := Player ofPlayerNamed: 'Fran'.
 	self assert: aPlayer position equals: 0.
 	aPlayer move: 5.
 	self assert: aPlayer position equals: 5
@@ -24,7 +25,7 @@ ScoreboardRowTest >> test02ARowUpdateThePlayerPositionBy5 [
 { #category : #tests }
 ScoreboardRowTest >> test03RowCreationFailedWithBlankName [
 	self
-		should: [ ScoreboardRaw ofPlayerNamed: '' ]
+		should: [ Player ofPlayerNamed: '' ]
 		raise: InstanceCreationFailed
 		withMessageText: 'The player name cannot be blank'
 ]
