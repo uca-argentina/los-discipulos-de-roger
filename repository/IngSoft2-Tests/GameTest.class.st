@@ -63,8 +63,8 @@ GameTest >> testCannotAskForPodiumPositionOfAPlayerThatIsNotInTheGame [
 	aThirdPlayer := 'Julivrone'.
 	aGame := Game
 		with: (Die of: 6 rolling: #(6 5 1))
-		playedBy: players
-		on: self noEffectBoardOf12.
+		on: self noEffectBoardOf12
+		playedBy: players.
 	self
 		should: [ aGame podiumOf: aThirdPlayer ]
 		raise: InvalidAction
@@ -76,8 +76,8 @@ GameTest >> testCannotAskForWinnerOfAnUnfinishedGame [
 	| aGame |
 	aGame := Game
 		with: (Die of: 6 rolling: #(4 1))
-		playedBy: players
-		on: self noEffectBoardOf12.
+		on: self noEffectBoardOf12
+		playedBy: players.
 	aGame playTurn.
 	self
 		should: [ aGame winner ]
@@ -90,8 +90,8 @@ GameTest >> testCannotPlayAFinishedGame [
 	| aGame |
 	aGame := Game
 		with: (Die of: 6 rolling: #(4 1))
-		playedBy: players
-		on: self noEffectBoardOf12.
+		on: self noEffectBoardOf12
+		playedBy: players.
 	aGame playUntilFinished.
 	self
 		should: [ aGame playTurn ]
@@ -186,10 +186,9 @@ GameTest >> testGetTwoCardsAtGameStart [
 	aPlayer := 'Fran'.
 	aGame := Game
 		with: die
-		playedBy: {aPlayer}
-		on: self noEffectBoardOf12.
-	self assert: aGame actualPlayer cardCount equals: 2.
-	
+		on: self noEffectBoardOf12
+		playedBy: {aPlayer}.
+	self assert: aGame actualPlayer cardCount equals: 2
 ]
 
 { #category : #tests }
@@ -211,10 +210,9 @@ GameTest >> testManuDrawsAnInstantCard [
 	aPlayer := 'Fran'.
 	aGame := Game
 		with: die
-		playedBy: {aPlayer}
-		on: self noEffectBoardOf12.
-	self assert: aGame actualPlayer cardCount equals: 2.
-	
+		on: self noEffectBoardOf12
+		playedBy: {aPlayer}.
+	self assert: aGame actualPlayer cardCount equals: 2
 ]
 
 { #category : #tests }
@@ -306,8 +304,8 @@ GameTest >> testPlayAGameAndFranSecondAndManuFirst [
 	| aGame |
 	aGame := Game
 		with: (Die of: 6 rolling: #(1 4))
-		playedBy: players
-		on: self noEffectBoardOf12.
+		on: self noEffectBoardOf12
+		playedBy: players.
 	aGame playUntilFinished.
 	self assert: (aGame atPodium: 2) name equals: 'Fran'.
 	self assert: (aGame atPodium: 1) name equals: 'Manu'
@@ -318,8 +316,8 @@ GameTest >> testPlayAGameAndFranWins [
 	| aGame |
 	aGame := Game
 		with: (Die of: 6 rolling: #(4 1))
-		playedBy: players
-		on: self noEffectBoardOf12.
+		on: self noEffectBoardOf12
+		playedBy: players.
 	aGame playUntilFinished.
 	self assert: aGame winner name equals: 'Fran'
 ]
@@ -331,8 +329,8 @@ GameTest >> testPlayAGameAndGetPodiumPositionOfEachPlayer [
 	players add: aThirdPlayer.
 	aGame := Game
 		with: (Die of: 6 rolling: #(5 6 1))
-		playedBy: players
-		on: self noEffectBoardOf12.
+		on: self noEffectBoardOf12
+		playedBy: players.
 	3 timesRepeat: [ aGame playTurn ].
 	self assert: (aGame podiumOf: 'Fran') equals: 2.
 	self assert: (aGame podiumOf: 'Manu') equals: 1.
@@ -345,8 +343,8 @@ GameTest >> testPlayGame [
 	aPlayer := 'Fran'.
 	aGame := Game
 		with: (Die of: 6 rolling: #(4))
-		playedBy: {aPlayer}
-		on: self noEffectBoardOf12.
+		on: self noEffectBoardOf12
+		playedBy: {aPlayer}.
 	3 timesRepeat: [ aGame playTurn ].
 	self assert: aGame hasFinished
 ]
@@ -369,6 +367,20 @@ GameTest >> testSpeedUpMakesManuGoFirst [
 	aGame playTurn.
 	self assert: (aGame podiumOf: 'Manu') equals: 1.
 	self assert: (self positionOf: 'Manu' in: aGame) equals: 5
+]
+
+{ #category : #tests }
+GameTest >> testTriggerAPickCard [
+	| actualPlayer aGame |
+	actualPlayer := 'Manu'.
+	aGame := Game
+		with: die
+		on: ((BoardGenerator with: 10 of: PickCard new) buildOf: 10)
+		playedBy: {actualPlayer}
+		withLaps: 1.
+	self assert: aGame actualPlayer cardCount equals: 2.
+	aGame playTurn.
+	self assert: aGame actualPlayer cardCount equals: 3.
 ]
 
 { #category : #tests }
@@ -428,6 +440,20 @@ GameTest >> testTriggerAaMoonWalkAndAnotherPlayerStaysAtStart [
 ]
 
 { #category : #tests }
+GameTest >> testTriggerAccelerationEffect [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: {players}
+		withLaps: 1
+		shuffling: (CardDeck with: {Acceleration new}).
+		aGame actualPlayer playCard: Acceleration new.
+	3 timesRepeat: [ aGame playTurn ].
+	self assert: aGame hasFinished
+]
+
+{ #category : #tests }
 GameTest >> testTriggerAnAtomicBombAtStartDoesNothing [
 	| aGame |
 	aGame := Game
@@ -470,8 +496,8 @@ GameTest >> testWithMultipleDice [
 	| aGame |
 	aGame := Game
 		with: die + (Die of: 8 rolling: #(7 3))
-		playedBy: players
-		on: self noEffectBoardOf12.
+		on: self noEffectBoardOf12
+		playedBy: players.
 	aGame playUntilFinished.
 	self assert: aGame hasFinished
 ]

@@ -8,28 +8,35 @@ Class {
 		'laps',
 		'scoreboard',
 		'board',
-		'appliedCards'
+		'appliedCards',
+		'deck'
 	],
 	#category : #'IngSoft2-Model-Game'
 }
 
 { #category : #'as yet unclassified' }
 Game class >> playedBy: aCollection [ 
-	^self with: Die d6 on: Board ucaGameDefault playedBy: aCollection  withLaps: 1
+	^self with: Die d6 on: Board ucaGameDefault playedBy: aCollection  withLaps: 1 shuffling: CardDeck withAllCards.
+]
+
+{ #category : #'as yet unclassified' }
+Game class >> with: aDice on: aBoard playedBy: aCollection [ 
+	^self with: aDice on: aBoard playedBy: aCollection  withLaps: 1 shuffling: CardDeck withAllCards.
 ]
 
 { #category : #instanceCreation }
 Game class >> with: dice on: aBoard playedBy: players withLaps: laps [
+	^self with: dice on: aBoard playedBy: players withLaps: laps shuffling: CardDeck withAllCards.
+]
+
+{ #category : #instanceCreation }
+Game class >> with: dice on: aBoard playedBy: players withLaps: laps shuffling: aCardDeck [.
 	^ self new
 		initializeDice: dice
 		withBoard: aBoard
 		andPlayers: players
-		andLaps: laps.
-]
-
-{ #category : #'as yet unclassified' }
-Game class >> with: aDice playedBy: aCollection on: aBoard [ 
-	^self with: aDice on: aBoard playedBy: aCollection  withLaps: 1.
+		andLaps: laps
+		shuffling: aCardDeck.
 ]
 
 { #category : #accessing }
@@ -76,8 +83,9 @@ Game >> hasFinished [
 ]
 
 { #category : #initialization }
-Game >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: ammountLaps [
+Game >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: ammountLaps shuffling: aCardDeck [
 	| rows |
+	deck := aCardDeck.
 	rows := self makePlayerRows: players. 
 	dice := aDice.
 	playerSequence := CircularIterator cyclingOver: (rows copy).
@@ -85,6 +93,7 @@ Game >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: amm
 	state := Started new.
 	laps := ammountLaps. 
 	scoreboard := Scoreboard withRows: rows.
+	
 ]
 
 { #category : #accessing }
@@ -99,9 +108,9 @@ Game >> length [
 
 { #category : #'as yet unclassified' }
 Game >> makePlayerRows: aCollection [ 
-	| rowList |
+	| rowList aPlayer |
 	rowList := OrderedCollection new.
-	aCollection  do: [ :playerName | rowList add: (Player ofPlayerNamed: playerName )].
+	aCollection  do: [ :playerName | aPlayer := (Player ofPlayerNamed: playerName) pick: 2 from: deck. rowList add: aPlayer].
 	^rowList 
 ]
 
@@ -133,6 +142,11 @@ Game >> moveActualPlayerForward: aMovement [
 { #category : #playing }
 Game >> outOfBounds: aPlayer [
 	^ aPlayer position >= self length | (aPlayer position < 0)
+]
+
+{ #category : #'as yet unclassified' }
+Game >> pickCardForActualPlayer [
+	self actualPlayer pick:1 from: deck.
 ]
 
 { #category : #playing }

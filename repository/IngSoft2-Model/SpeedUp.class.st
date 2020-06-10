@@ -1,6 +1,6 @@
 Class {
 	#name : #SpeedUp,
-	#superclass : #Object,
+	#superclass : #Field,
 	#category : #'IngSoft2-Model-Board'
 }
 

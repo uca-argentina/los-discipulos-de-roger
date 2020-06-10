@@ -5,7 +5,7 @@ Class {
 		'playerName',
 		'position',
 		'laps',
-		'cardDeck'
+		'hand'
 	],
 	#category : #'IngSoft2-Model-Scoreboard'
 }
@@ -16,7 +16,7 @@ Player class >> ofPlayerNamed: aNameSurname [
 		ifTrue: [ InstanceCreationFailed
 				signal: 'The player name cannot be blank' ].
 		
-		^self new 
+		^self new
 		initializeWithName: aNameSurname
 ]
 
@@ -46,7 +46,7 @@ Player >> addLap: lapsToMove andMove: aMovement [
 
 { #category : #'as yet unclassified' }
 Player >> cardCount [
-	^cardDeck size
+	^hand size
 ]
 
 { #category : #playing }
@@ -57,15 +57,10 @@ Player >> checkLapCount [
 
 { #category : #initialization }
 Player >> initializeWithName: aName [
-	self initializeWithName: aName andCards: (HandGenerator withCards: 2). 
-]
-
-{ #category : #initialization }
-Player >> initializeWithName: aName andCards: aCardGenerator [
 	playerName := aName.
 	position := 0.
 	laps := 0.
-	cardDeck := aCardGenerator.
+	hand := OrderedCollection new.
 ]
 
 { #category : #accessing }
@@ -81,6 +76,19 @@ Player >> move: aMovement [
 { #category : #accessing }
 Player >> name [
 	^playerName
+]
+
+{ #category : #'as yet unclassified' }
+Player >> pick: anInteger from: aCardDeck [
+	anInteger timesRepeat: [ hand add: aCardDeck draw  ].
+]
+
+{ #category : #'as yet unclassified' }
+Player >> playCard: aCardType [ 
+	| index |
+	index := hand indexOf: aCardType.
+	index>0 ifFalse: [ InvalidAction  signal: 'Player does not have this type of card']
+	
 ]
 
 { #category : #accessing }

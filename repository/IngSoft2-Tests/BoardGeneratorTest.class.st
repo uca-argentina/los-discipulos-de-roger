@@ -7,7 +7,8 @@ Class {
 		'countMoonwalk',
 		'countspeedUp',
 		'countWormhole',
-		'aBoardGenerator'
+		'aBoardGenerator',
+		'countPickCard'
 	],
 	#category : #'IngSoft2-Tests-Board-Tests'
 }
@@ -32,7 +33,9 @@ BoardGeneratorTest >> setUp [
 	countMoonwalk := OrderedCollection new.
 	countspeedUp := OrderedCollection new.
 	countWormhole := OrderedCollection new.
+	countPickCard := OrderedCollection new.
 	aBoardGenerator := BoardGenerator with: 20 of: Wormhole new.
+	aBoardGenerator add: 10 of: PickCard new.
 	aBoardGenerator add: 20 of: SpeedUp new.
 	aBoardGenerator add: 10 of: Moonwalk createField.
 	aBoardGenerator add: 2 of: AtomicBomb new.
@@ -58,12 +61,14 @@ BoardGeneratorTest >> testBoardHasCorrectDistribution [
 	| aBoard |
 	2000
 		timesRepeat: [ aBoard := aBoardGenerator buildOf: 100.
+			countPickCard add: (self count: PickCard of: aBoard).
 			countNoEffects add: (self count: NoEffect of: aBoard).
 			countAtomicBomb add: (self count: AtomicBomb of: aBoard).
 			countMoonwalk add: (self count: Moonwalk of: aBoard).
 			countspeedUp add: (self count: SpeedUp of: aBoard).
 			countWormhole add: (self count: Wormhole of: aBoard) ].
-	self assert: (self averageOf: countNoEffects) equals: 48.
+	self assert: (self averageOf: countPickCard) equals: 10.
+	self assert: (self averageOf: countNoEffects) equals: 38.
 	self assert: (self averageOf: countAtomicBomb) equals: 2.
 	self assert: (self averageOf: countWormhole) equals: 20.
 	self assert: (self averageOf: countspeedUp) equals: 20.

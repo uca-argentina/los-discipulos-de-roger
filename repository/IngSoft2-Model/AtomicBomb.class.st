@@ -1,6 +1,6 @@
 Class {
 	#name : #AtomicBomb,
-	#superclass : #Object,
+	#superclass : #Field,
 	#category : #'IngSoft2-Model-Board'
 }
 
