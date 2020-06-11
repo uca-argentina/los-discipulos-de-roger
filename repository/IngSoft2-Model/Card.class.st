@@ -1,9 +1,6 @@
 Class {
 	#name : #Card,
 	#superclass : #Object,
-	#instVars : [
-		'playState'
-	],
 	#category : #'IngSoft2-Model-Card'
 }
 
@@ -13,7 +10,17 @@ Card class >> playingAs: aCardPlayState [
 	initializeWithPlayState: aCardPlayState
 ]
 
-{ #category : #initialization }
-Card >> initializeWithPlayState: aCardPlayState [
-	playState := aCardPlayState.
+{ #category : #comparing }
+Card >> = aCard [
+	^aCard isMemberOf: self class.
+]
+
+{ #category : #'as yet unclassified' }
+Card >> triggerEffectFor: aGame [
+	self subclassResponsibility
+]
+
+{ #category : #'as yet unclassified' }
+Card >> useEffectFor: aGame [
+	self subclassResponsibility
 ]

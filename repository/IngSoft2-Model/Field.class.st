@@ -6,5 +6,5 @@ Class {
 
 { #category : #playing }
 Field >> triggerEffectFor: aGame [
-self subclassResponsibility.
+	self subclassResponsibility
 ]

@@ -55,6 +55,11 @@ Player >> checkLapCount [
 		ifTrue: [ self resetLapsAndPosition ]
 ]
 
+{ #category : #'as yet unclassified' }
+Player >> getCardAt: index [
+	^ hand removeAt: index
+]
+
 { #category : #initialization }
 Player >> initializeWithName: aName [
 	playerName := aName.
@@ -66,6 +71,17 @@ Player >> initializeWithName: aName [
 { #category : #accessing }
 Player >> laps [
 	^ laps
+]
+
+{ #category : #'as yet unclassified' }
+Player >> layCard: aCardType for: aGame [
+	| index |
+	index := hand indexOf: aCardType.
+	index > 0
+		ifFalse: [ InvalidAction signal: 'Player does not have this type of card' ].
+	
+	aCardType useEffectFor: aGame.
+	self getCardAt: index
 ]
 
 { #category : #playing }
@@ -81,14 +97,6 @@ Player >> name [
 { #category : #'as yet unclassified' }
 Player >> pick: anInteger from: aCardDeck [
 	anInteger timesRepeat: [ hand add: aCardDeck draw  ].
-]
-
-{ #category : #'as yet unclassified' }
-Player >> playCard: aCardType [ 
-	| index |
-	index := hand indexOf: aCardType.
-	index>0 ifFalse: [ InvalidAction  signal: 'Player does not have this type of card']
-	
 ]
 
 { #category : #accessing }

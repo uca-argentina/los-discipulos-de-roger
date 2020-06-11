@@ -8,8 +8,8 @@ Class {
 		'laps',
 		'scoreboard',
 		'board',
-		'appliedCards',
-		'deck'
+		'deck',
+		'permanentCardDeck'
 	],
 	#category : #'IngSoft2-Model-Game'
 }
@@ -39,17 +39,26 @@ Game class >> with: dice on: aBoard playedBy: players withLaps: laps shuffling: 
 		shuffling: aCardDeck.
 ]
 
+{ #category : #'as yet unclassified' }
+Game >> activatePermanentEffects [
+	permanentCardDeck do: [ :aCard | aCard triggerEffectFor: self ]
+]
+
 { #category : #accessing }
 Game >> actualPlayer [
-	^playerSequence current
+	^ playerSequence current
+]
+
+{ #category : #'as yet unclassified' }
+Game >> addPermanent: aCard [
+	permanentCardDeck add: aCard
 ]
 
 { #category : #results }
 Game >> atPodium: aPosition [
+	"This could be used to get when is a players turn or to get the positions at the end of the game"
 
-"This could be used to get when is a players turn or to get the positions at the end of the game"
-
-^scoreboard  at: aPosition 
+	^ scoreboard at: aPosition
 ]
 
 { #category : #playing }
@@ -93,6 +102,7 @@ Game >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: amm
 	state := Started new.
 	laps := ammountLaps. 
 	scoreboard := Scoreboard withRows: rows.
+	permanentCardDeck := OrderedCollection new.
 	
 ]
 
@@ -101,17 +111,25 @@ Game >> laps [
 	^ laps
 ]
 
+{ #category : #'as yet unclassified' }
+Game >> lastCard [
+	^permanentCardDeck last copy
+]
+
 { #category : #accessing }
 Game >> length [
 	^board length 
 ]
 
 { #category : #'as yet unclassified' }
-Game >> makePlayerRows: aCollection [ 
+Game >> makePlayerRows: aCollection [
 	| rowList aPlayer |
 	rowList := OrderedCollection new.
-	aCollection  do: [ :playerName | aPlayer := (Player ofPlayerNamed: playerName) pick: 2 from: deck. rowList add: aPlayer].
-	^rowList 
+	aCollection
+		do: [ :playerName | 
+			aPlayer := (Player ofPlayerNamed: playerName) pick: 2 from: deck.
+			rowList add: aPlayer ].
+	^ rowList
 ]
 
 { #category : #playing }
@@ -153,6 +171,7 @@ Game >> pickCardForActualPlayer [
 Game >> playTurn [
 	state canPlay ifFalse:[ InvalidAction signal: 'Cannot play a finished game.'].
 	self moveActualPlayerForward: self roll.
+	self activatePermanentEffects.
 	board triggerFor: self.
 	self finishTurn.
 ]
@@ -164,9 +183,32 @@ Game >> playUntilFinished [
 [self hasFinished] whileFalse: [ self playTurn  ]
 ]
 
+{ #category : #'as yet unclassified' }
+Game >> player: aPlayerName [
+	| index |
+	index := scoreboard indexOf: aPlayerName.
+	^scoreboard at: index.
+]
+
+{ #category : #'as yet unclassified' }
+Game >> player: aPlayerName playCard: aCard [
+
+	| aPlayer |
+	aPlayer := self player: aPlayerName.
+	aPlayer layCard: aCard for: self.
+]
+
 { #category : #accessing }
 Game >> podiumOf: aScoreboardRaw [ 
 	^ scoreboard indexOf: aScoreboardRaw 
+]
+
+{ #category : #'as yet unclassified' }
+Game >> removePermanentCard: aClass [
+	| index |
+	index := permanentCardDeck indexOf: aClass.
+	index > 0
+		ifTrue: [ permanentCardDeck removeAt: index ]
 ]
 
 { #category : #playing }

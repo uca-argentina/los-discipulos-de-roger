@@ -4,7 +4,17 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
-{ #category : #comparing }
-Acceleration >> = aCard [
-	^aCard isMemberOf: Acceleration.
+{ #category : #'as yet unclassified' }
+Acceleration class >> to: anUndefinedObject [ 
+	^self new
+]
+
+{ #category : #'as yet unclassified' }
+Acceleration >> triggerEffectFor: aGame [ 
+	aGame moveActualPlayerForward: 1.
+]
+
+{ #category : #'as yet unclassified' }
+Acceleration >> useEffectFor: aGame [ 
+	aGame addPermanent: self.
 ]
