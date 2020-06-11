@@ -36,5 +36,6 @@ Board >> length [
 
 { #category : #playing }
 Board >> triggerFor: aGame [ 
+	aGame forActualUpdateLastEffect: (fields at: (aGame actualPlayer position)+1).
 	(fields at: (aGame actualPlayer position)+1) triggerEffectFor: aGame.
 ]

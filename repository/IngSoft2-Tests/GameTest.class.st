@@ -7,7 +7,8 @@ Class {
 		'aNoEffect',
 		'aWormhole',
 		'anAtomicBomb',
-		'aSpeedUp'
+		'aSpeedUp',
+		'anAcceleration'
 	],
 	#category : #'IngSoft2-Tests-Game-Tests'
 }
@@ -59,7 +60,8 @@ GameTest >> setUp [
 	aNoEffect := NoEffect new.
 	aWormhole := Wormhole new.
 	anAtomicBomb := AtomicBomb new.
-	aSpeedUp := SpeedUp new
+	aSpeedUp := SpeedUp new.
+	anAcceleration := Acceleration new.
 ]
 
 { #category : #tests }
@@ -74,9 +76,9 @@ GameTest >> testActivateCancellationOfNonPlayedCard [
 			(CardDeck
 				with:
 					{Cancellation new.
-					Acceleration new}
+					anAcceleration}
 				of: #(1 2)).
-	aGame player: 'Manu' playCard: (Cancellation to: Acceleration new).
+	aGame player: 'Manu' playCard: (Cancellation to: anAcceleration).
 	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
 	self assert: (self cardsOf: 'Manu' in: aGame) equals: 1.
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
@@ -504,16 +506,71 @@ GameTest >> testTriggerCancellationEffect [
 			(CardDeck
 				with:
 					{Cancellation new.
-					Acceleration new}
+					anAcceleration}
 				of: #(1 2)).
-	aGame player: 'Fran' playCard: Acceleration new.
-	aGame player: 'Manu' playCard: (Cancellation to: Acceleration new).
+	aGame player: 'Fran' playCard: anAcceleration.
+	aGame player: 'Manu' playCard: (Cancellation to: anAcceleration).
 	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
 	self assert: (self cardsOf: 'Manu' in: aGame) equals: 1.
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
 	aGame playTurn.
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
 	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+GameTest >> testTriggerCancellationEffectToAnSpecificSpeed [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{Cancellation new.
+					Speed new}
+				of: #(1 2)).
+	aGame player: 'Fran' playCard: (Speed to: 'Fran').
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	aGame player: 'Manu' playCard: (Speed to: 'Manu').
+	aGame player: 'Fran' playCard:( Cancellation to:(Speed to: 'Manu')).
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 4.
+]
+
+{ #category : #tests }
+GameTest >> testTriggerCancellationEffectToAnSpecificSpeedButManuHavingTwoOfThem [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{Speed new.
+					Cancellation new}
+				of: #(2 1 1 1)).
+	aGame player: 'Fran' playCard: (Speed to: 'Fran').
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	aGame player: 'Manu' playCard: (Speed to: 'Manu').
+	aGame player: 'Manu' playCard: (Speed to: 'Manu').
+	aGame player: 'Fran' playCard: (Cancellation to: (Speed to: 'Manu')).
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 5
 ]
 
 { #category : #tests }
@@ -543,15 +600,38 @@ GameTest >> testTriggerRedoAcceleration [
 		on: self noEffectBoardOf12
 		playedBy: players
 		withLaps: 1
-		shuffling: (CardDeck with: {Acceleration new. Redo new} of: #(1 2)).
+		shuffling: (CardDeck with: {anAcceleration. Redo new} of: #(1 2)).
 	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
-	aGame player: 'Fran' playCard: Acceleration new.
+	aGame player: 'Fran' playCard: anAcceleration.
 	aGame player: 'Fran' playCard: Redo new.
 	self assert: (self cardsOf: 'Fran' in: aGame) equals: 0.
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
 	aGame playTurn.
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 6.
 	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+]
+
+{ #category : #tests }
+GameTest >> testTriggerRedoCancellation [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {anAcceleration. Speed new. Redo new. Cancellation new.} of: #(1 2 3 4)).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	aGame player: 'Fran' playCard: (Speed to: 'Fran').
+	aGame player: 'Fran' playCard: (anAcceleration).
+	aGame player: 'Manu' playCard: (Cancellation  to: Speed new).
+	aGame player: 'Manu' playCard: (Redo to: Acceleration new).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+
 ]
 
 { #category : #tests }
@@ -562,7 +642,7 @@ GameTest >> testTriggerRedoSpeed [
 		on: self noEffectBoardOf12
 		playedBy: players
 		withLaps: 1
-		shuffling: (CardDeck with: {Speed new. Redo new} of: #(1 2)).
+		shuffling: (CardDeck with: {Cancellation new. Speed new. Redo new} of: #(2 2 1 3)).
 	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
 	aGame player: 'Fran' playCard: (Speed to: 'Fran').
 	aGame player: 'Manu' playCard: (Redo to: 'Manu').
@@ -574,6 +654,28 @@ GameTest >> testTriggerRedoSpeed [
 	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
 	aGame playTurn.
 	self assert: (self positionOf: 'Manu' in: aGame) equals: 5.
+]
+
+{ #category : #tests }
+GameTest >> testTriggerRepeat [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {Acceleration new}).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	aGame player: 'Fran' playCard: Acceleration new.
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame player: 'Manu' playCard: Acceleration new.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 6
 ]
 
 { #category : #tests }

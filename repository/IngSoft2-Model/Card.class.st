@@ -10,9 +10,9 @@ Card class >> playingAs: aCardPlayState [
 	initializeWithPlayState: aCardPlayState
 ]
 
-{ #category : #comparing }
-Card >> = aCard [
-	^aCard isMemberOf: self class.
+{ #category : #'as yet unclassified' }
+Card >> = aCard [ 
+^ (aCard isMemberOf: self class) 
 ]
 
 { #category : #'as yet unclassified' }

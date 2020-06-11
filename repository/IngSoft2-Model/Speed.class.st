@@ -18,6 +18,16 @@ Speed >> initializeWithTarget: aString [
 ]
 
 { #category : #'as yet unclassified' }
+Speed >> isIdenticalTo: aSpeed [ 
+	^ (aSpeed = self) and:( aSpeed target= target)
+]
+
+{ #category : #'as yet unclassified' }
+Speed >> target [
+	^ target
+]
+
+{ #category : #'as yet unclassified' }
 Speed >> triggerEffectFor: aGame [ 
 	((aGame player: target )= (aGame actualPlayer)) ifTrue: [ aGame moveActualPlayerForward: 1 ]
 ]

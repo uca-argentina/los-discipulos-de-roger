@@ -18,6 +18,11 @@ Cancellation >> initializeWithTarget: aClass [
 ]
 
 { #category : #'as yet unclassified' }
+Cancellation >> isIdenticalTo: aCard [ 
+	^(self = aCard) and: (aCard target = target)
+]
+
+{ #category : #'as yet unclassified' }
 Cancellation >> triggerEffectFor: aGame [ 
 
 ]

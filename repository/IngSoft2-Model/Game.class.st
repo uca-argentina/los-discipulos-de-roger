@@ -9,7 +9,7 @@ Class {
 		'scoreboard',
 		'board',
 		'deck',
-		'permanentCardDeck'
+		'thrownCards'
 	],
 	#category : #'IngSoft2-Model-Game'
 }
@@ -41,7 +41,7 @@ Game class >> with: dice on: aBoard playedBy: players withLaps: laps shuffling: 
 
 { #category : #'as yet unclassified' }
 Game >> activatePermanentEffects [
-	permanentCardDeck do: [ :aCard | aCard triggerEffectFor: self ]
+	thrownCards  do: [ :aCard | aCard triggerEffectFor: self ]
 ]
 
 { #category : #accessing }
@@ -51,7 +51,7 @@ Game >> actualPlayer [
 
 { #category : #'as yet unclassified' }
 Game >> addPermanent: aCard [
-	permanentCardDeck add: aCard
+	thrownCards  add: aCard
 ]
 
 { #category : #results }
@@ -102,7 +102,7 @@ Game >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: amm
 	state := Started new.
 	laps := ammountLaps. 
 	scoreboard := Scoreboard withRows: rows.
-	permanentCardDeck := OrderedCollection new.
+	thrownCards  := OrderedCollection new.
 	
 ]
 
@@ -113,7 +113,7 @@ Game >> laps [
 
 { #category : #'as yet unclassified' }
 Game >> lastCard [
-	^permanentCardDeck last copy
+	^thrownCards  last copy
 ]
 
 { #category : #accessing }
@@ -204,11 +204,12 @@ Game >> podiumOf: aScoreboardRaw [
 ]
 
 { #category : #'as yet unclassified' }
-Game >> removePermanentCard: aClass [
-	| index |
-	index := permanentCardDeck indexOf: aClass.
-	index > 0
-		ifTrue: [ permanentCardDeck removeAt: index ]
+Game >> removePermanentCard: aCard [
+	| aColl |
+	aColl :=  thrownCards select: [ :card | (card isIdenticalTo: aCard) ].
+	aColl isEmpty ifFalse: [aColl removeFirst].
+	thrownCards :=(thrownCards select: [ :card | (card isIdenticalTo: aCard) not]) addAll: aColl.
+	
 ]
 
 { #category : #playing }

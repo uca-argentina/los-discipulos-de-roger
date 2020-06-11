@@ -10,6 +10,15 @@ Acceleration class >> to: anUndefinedObject [
 ]
 
 { #category : #'as yet unclassified' }
+Acceleration >> isIdenticalTo: anAcceleration [ 
+	^anAcceleration = self
+]
+
+{ #category : #'as yet unclassified' }
+Acceleration >> target [
+]
+
+{ #category : #'as yet unclassified' }
 Acceleration >> triggerEffectFor: aGame [ 
 	aGame moveActualPlayerForward: 1.
 ]

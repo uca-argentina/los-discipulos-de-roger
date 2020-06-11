@@ -79,7 +79,6 @@ Player >> layCard: aCardType for: aGame [
 	index := hand indexOf: aCardType.
 	index > 0
 		ifFalse: [ InvalidAction signal: 'Player does not have this type of card' ].
-	
 	aCardType useEffectFor: aGame.
 	self getCardAt: index
 ]
