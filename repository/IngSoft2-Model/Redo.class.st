@@ -8,16 +8,6 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-Redo class >> to: aString [ 
-	^self new initializeWithTarget: aString.
-]
-
-{ #category : #'as yet unclassified' }
-Redo >> initializeWithTarget: aString [ 
-	target := aString
-]
-
-{ #category : #'as yet unclassified' }
 Redo >> triggerEffectFor: aGame [
 	
 ]

@@ -7,32 +7,21 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
-{ #category : #'as yet unclassified' }
-Speed class >> to: aString [ 
-	^self new initializeWithTarget: aString
-]
-
-{ #category : #'as yet unclassified' }
-Speed >> initializeWithTarget: aString [ 
-	target := aString
-]
-
-{ #category : #'as yet unclassified' }
-Speed >> isIdenticalTo: aSpeed [ 
-	^ (aSpeed = self) and:( aSpeed target= target)
-]
-
-{ #category : #'as yet unclassified' }
-Speed >> target [
-	^ target
+{ #category : #accessing }
+Speed class >> to: aTarget [
+	(aTarget isMemberOf: TargetCard)
+		ifTrue: [ InstanceCreationFailed signal: 'Target must be a player' ].
+	^ self new initializeWithTarget: aTarget
 ]
 
 { #category : #'as yet unclassified' }
 Speed >> triggerEffectFor: aGame [ 
-	((aGame player: target )= (aGame actualPlayer)) ifTrue: [ aGame moveActualPlayerForward: 1 ]
+	((target objective )= (aGame actualPlayer)) ifTrue: [ aGame moveActualPlayerForward: 1 ]
 ]
 
 { #category : #'as yet unclassified' }
-Speed >> useEffectFor: aGame [ 
+Speed >> useEffectFor: aGame [
+	target isValid
+		ifFalse: [ InvalidAction signal: 'Cannot be used without a target' ].
 	aGame addPermanent: self
 ]

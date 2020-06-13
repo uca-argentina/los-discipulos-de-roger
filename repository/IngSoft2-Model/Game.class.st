@@ -178,9 +178,7 @@ Game >> playTurn [
 
 { #category : #playing }
 Game >> playUntilFinished [
-	"playNext pero juega hasta que termine el juego, no sólo la próxima jugada"
-
-[self hasFinished] whileFalse: [ self playTurn  ]
+	[ self hasFinished ] whileFalse: [ self playTurn ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -210,6 +208,13 @@ Game >> removePermanentCard: aCard [
 	aColl isEmpty ifFalse: [aColl removeFirst].
 	thrownCards :=(thrownCards select: [ :card | (card isIdenticalTo: aCard) not]) addAll: aColl.
 	
+]
+
+{ #category : #'as yet unclassified' }
+Game >> repeatLastEffect [
+	playerSequence goBack.
+	board triggerLastFor: self.
+	self finishTurn.
 ]
 
 { #category : #playing }

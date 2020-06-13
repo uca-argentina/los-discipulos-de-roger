@@ -7,25 +7,22 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
-{ #category : #'as yet unclassified' }
-Overload class >> to: aPlayerName [
-	^self new initializeWithTarget: aPlayerName
-]
-
-{ #category : #'as yet unclassified' }
-Overload >> initializeWithTarget: aString [ 
-	target := aString.
+{ #category : #accessing }
+Overload class >> to: aTarget [
+	(aTarget isMemberOf: TargetCard)
+		ifTrue: [ InstanceCreationFailed signal: 'Target must be a player' ].
+	^ self new initializeWithTarget: aTarget
 ]
 
 { #category : #'as yet unclassified' }
 Overload >> triggerEffectFor: aGame [ 
 	
-	| aPlayer |
-	aPlayer := aGame player: target.
-	aPlayer = aGame actualPlayer ifTrue: [ aGame moveActualPlayerBackwards: 2 ].
+	target objective = aGame actualPlayer ifTrue: [ aGame moveActualPlayerBackwards: 2 ].
 ]
 
 { #category : #'as yet unclassified' }
-Overload >> useEffectFor: aGame [ 
+Overload >> useEffectFor: aGame [
+	target isValid
+		ifFalse: [ InvalidAction signal: 'Cannot be used without a target' ].
 	aGame addPermanent: self
 ]

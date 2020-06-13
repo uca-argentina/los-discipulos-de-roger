@@ -7,19 +7,11 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
-{ #category : #'as yet unclassified' }
-Cancellation class >> to: aClass [
-	^ self new initializeWithTarget: aClass
-]
-
-{ #category : #'as yet unclassified' }
-Cancellation >> initializeWithTarget: aClass [ 
-	target := aClass
-]
-
-{ #category : #'as yet unclassified' }
-Cancellation >> isIdenticalTo: aCard [ 
-	^(self = aCard) and: (aCard target = target)
+{ #category : #accessing }
+Cancellation class >> to: aTarget [
+	(aTarget isMemberOf: TargetPlayer)
+		ifTrue: [ InstanceCreationFailed signal: 'Target must be a card' ].
+	^ self new initializeWithTarget: aTarget
 ]
 
 { #category : #'as yet unclassified' }
@@ -28,7 +20,9 @@ Cancellation >> triggerEffectFor: aGame [
 ]
 
 { #category : #'as yet unclassified' }
-Cancellation >> useEffectFor: aGame [ 
-	aGame removePermanentCard: target.
-	aGame addPermanent: self.
+Cancellation >> useEffectFor: aGame [
+	target isValid
+		ifFalse: [ InvalidAction signal: 'Cannot be used without a target' ].
+	aGame removePermanentCard: target objective.
+	aGame addPermanent: self
 ]
