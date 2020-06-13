@@ -1,9 +1,6 @@
 Class {
 	#name : #Cancellation,
 	#superclass : #Card,
-	#instVars : [
-		'target'
-	],
 	#category : #'IngSoft2-Model-Card'
 }
 

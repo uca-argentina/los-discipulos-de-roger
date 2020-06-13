@@ -1,9 +1,6 @@
 Class {
 	#name : #Redo,
 	#superclass : #Card,
-	#instVars : [
-		'target'
-	],
 	#category : #'IngSoft2-Model-Card'
 }
 
