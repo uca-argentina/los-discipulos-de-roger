@@ -39,7 +39,7 @@ Game class >> with: dice on: aBoard playedBy: players withLaps: laps shuffling: 
 		shuffling: aCardDeck.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Game >> activatePermanentEffects [
 	thrownCards  do: [ :aCard | aCard triggerEffectFor: self ]
 ]
@@ -49,8 +49,14 @@ Game >> actualPlayer [
 	^ playerSequence current
 ]
 
-{ #category : #'as yet unclassified' }
-Game >> addPermanent: aCard [
+{ #category : #playing }
+Game >> addPermanent: aCard by: aPlayer [ 
+	(aPlayer = self actualPlayer) ifFalse: [ InvalidAction signal: 'It is not the card bearers turn' ].
+	self addToDeck: aCard.
+]
+
+{ #category : #playing }
+Game >> addToDeck: aCard [
 	thrownCards  add: aCard
 ]
 
@@ -111,7 +117,7 @@ Game >> laps [
 	^ laps
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Game >> lastCard [
 	^thrownCards  last copy
 ]
@@ -121,7 +127,7 @@ Game >> length [
 	^board length 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #intialization }
 Game >> makePlayerRows: aCollection [
 	| rowList aPlayer |
 	rowList := OrderedCollection new.
@@ -162,7 +168,7 @@ Game >> outOfBounds: aPlayer [
 	^ aPlayer position >= self length | (aPlayer position < 0)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Game >> pickCardForActualPlayer [
 	self actualPlayer pick:1 from: deck.
 ]
@@ -181,14 +187,14 @@ Game >> playUntilFinished [
 	[ self hasFinished ] whileFalse: [ self playTurn ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Game >> player: aPlayerName [
 	| index |
 	index := scoreboard indexOf: aPlayerName.
 	^scoreboard at: index.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Game >> player: aPlayerName playCard: aCard [
 
 	| aPlayer |
@@ -201,7 +207,7 @@ Game >> podiumOf: aScoreboardRaw [
 	^ scoreboard indexOf: aScoreboardRaw 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Game >> removePermanentCard: aCard [
 	| aColl |
 	aColl :=  thrownCards select: [ :card | (card isIdenticalTo: aCard) ].
@@ -210,7 +216,7 @@ Game >> removePermanentCard: aCard [
 	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Game >> repeatLastEffect [
 	playerSequence goBack.
 	board triggerLastFor: self.

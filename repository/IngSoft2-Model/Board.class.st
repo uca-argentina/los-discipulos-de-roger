@@ -43,7 +43,7 @@ Board >> triggerFor: aGame [
 	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Board >> triggerLastFor: aGame [ 
 	lastEffect triggerEffectFor: aGame
 ]

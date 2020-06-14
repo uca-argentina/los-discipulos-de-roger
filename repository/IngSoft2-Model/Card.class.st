@@ -12,7 +12,7 @@ Card class >> to: aTarget [
 	^self new initializeWithTarget: aTarget
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #comparing }
 Card >> = aCard [ 
 ^ (aCard isMemberOf: self class) 
 ]
@@ -22,22 +22,22 @@ Card >> initializeWithTarget: aTarget [
 	target := aTarget.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #comparing }
 Card >> isIdenticalTo: aCard [ 
 	^ (aCard = self) & aCard target= target
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Card >> target [
 	^ target
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Card >> triggerEffectFor: aGame [
 	self subclassResponsibility
 ]
 
 { #category : #'as yet unclassified' }
-Card >> useEffectFor: aGame [
+Card >> useEffectFor: aGame by: anObject [
 	self subclassResponsibility
 ]

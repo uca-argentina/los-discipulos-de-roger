@@ -11,15 +11,15 @@ Overload class >> to: aTarget [
 	^ self new initializeWithTarget: aTarget
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Overload >> triggerEffectFor: aGame [ 
 	
 	target objective = aGame actualPlayer ifTrue: [ aGame moveActualPlayerBackwards: 2 ].
 ]
 
-{ #category : #'as yet unclassified' }
-Overload >> useEffectFor: aGame [
+{ #category : #playing }
+Overload >> useEffectFor: aGame by: aPlayer [
 	target isValid
 		ifFalse: [ InvalidAction signal: 'Cannot be used without a target' ].
-	aGame addPermanent: self
+	aGame addPermanent: self by: aPlayer.
 ]

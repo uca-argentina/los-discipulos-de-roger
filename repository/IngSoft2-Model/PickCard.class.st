@@ -4,7 +4,7 @@ Class {
 	#category : #'IngSoft2-Model-Board'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 PickCard >> triggerEffectFor: aGame [ 
 	aGame pickCardForActualPlayer.
 ]

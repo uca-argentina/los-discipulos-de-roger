@@ -10,7 +10,7 @@ Started >> canFinish: aGame [
 	^ aGame laps <= aGame actualPlayer laps.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 Started >> canPlay [
 	^true.
 ]
@@ -21,7 +21,7 @@ Started >> finish: aGame [
 		ifTrue: [ aGame finishStartedGame ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 Started >> hasFinished [
 	^false
 ]

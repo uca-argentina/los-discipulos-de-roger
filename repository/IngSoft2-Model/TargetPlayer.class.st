@@ -4,13 +4,13 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 TargetPlayer >> initializePointingTo: aPlayerName [
 	 
 	objective := Player ofPlayerNamed: aPlayerName.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 TargetPlayer >> isValid [
 	^true
 ]

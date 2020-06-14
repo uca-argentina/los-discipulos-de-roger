@@ -11,15 +11,15 @@ Cancellation class >> to: aTarget [
 	^ self new initializeWithTarget: aTarget
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Cancellation >> triggerEffectFor: aGame [ 
 
 ]
 
-{ #category : #'as yet unclassified' }
-Cancellation >> useEffectFor: aGame [
+{ #category : #playing }
+Cancellation >> useEffectFor: aGame by: aPlayer [
 	target isValid
 		ifFalse: [ InvalidAction signal: 'Cannot be used without a target' ].
 	aGame removePermanentCard: target objective.
-	aGame addPermanent: self
+	aGame addToDeck: self
 ]

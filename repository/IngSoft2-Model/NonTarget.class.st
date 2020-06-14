@@ -4,11 +4,11 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 NonTarget >> isValid [
 	^false
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 NonTarget >> objective [
 ]

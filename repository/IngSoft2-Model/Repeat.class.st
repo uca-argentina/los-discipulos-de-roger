@@ -4,12 +4,12 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Repeat >> triggerEffectFor: aGame [
 ]
 
-{ #category : #'as yet unclassified' }
-Repeat >> useEffectFor: aGame [
+{ #category : #playing }
+Repeat >> useEffectFor: aGame by: aPlayer [
 	aGame repeatLastEffect.
-	aGame addPermanent: self.
+	aGame addToDeck: self.
 ]

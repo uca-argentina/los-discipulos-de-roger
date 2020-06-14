@@ -4,12 +4,12 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Acceleration >> triggerEffectFor: aGame [ 
 	aGame moveActualPlayerForward: 1.
 ]
 
-{ #category : #'as yet unclassified' }
-Acceleration >> useEffectFor: aGame [ 
-	aGame addPermanent: self.
+{ #category : #playing }
+Acceleration >> useEffectFor: aGame by: aPlayer [
+	aGame addPermanent: self by: aPlayer.
 ]

@@ -4,15 +4,15 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Redo >> triggerEffectFor: aGame [
 	
 ]
 
-{ #category : #'as yet unclassified' }
-Redo >> useEffectFor: aGame [ 
+{ #category : #playing }
+Redo >> useEffectFor: aGame by: aPlayer [
 	| aCard |
 	aCard := aGame lastCard class.
 	aCard := aCard to: target.
-	aCard useEffectFor: aGame.
+	aCard useEffectFor: aGame by: aPlayer
 ]

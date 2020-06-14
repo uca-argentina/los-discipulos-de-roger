@@ -30,7 +30,7 @@ CircularIterator >> current [
 	^options at: currentIndex + 1
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #iterating }
 CircularIterator >> goBack [
 	currentIndex := currentIndex - 1.
 	currentIndex < 0

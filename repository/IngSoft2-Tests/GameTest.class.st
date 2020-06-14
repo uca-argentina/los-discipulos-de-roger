@@ -18,7 +18,7 @@ Class {
 	#category : #'IngSoft2-Tests-Game-Tests'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 GameTest >> cardsOf: aPlayer in: aGame [
 	^ (self whereIs: aPlayer in: aGame) cardCount 
 ]
@@ -39,7 +39,7 @@ GameTest >> finalBoard [
 	^ anArrayOfFields
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 GameTest >> lapsOf: aPlayer in: aGame [
 	^ (self whereIs: aPlayer in: aGame) laps
 ]
@@ -244,6 +244,20 @@ GameTest >> testInstanceCreationAndAccessing [
 	self assert: aGame laps equals: 9.
 	self assert: aGame dice equals: die.
 	self assert: aGame length equals: 10
+]
+
+{ #category : #tests }
+GameTest >> testManuCantPlayPermanentCardBecauseItsNotHisTurn [
+	| aGame |
+	aGame := Game
+		with: die
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {anAcceleration }).
+	
+	self should: [ aGame player: 'Manu' playCard: anAcceleration. ] raise: InvalidAction withMessageText: 'It is not the card bearers turn'.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
 ]
 
 { #category : #tests }
@@ -707,11 +721,11 @@ GameTest >> testTriggerRedoSpeed [
 				of: #(2 2 1 3)).
 	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
 	aGame player: 'Fran' playCard: (Speed to: (TargetPlayer pointing: 'Fran')).
-	aGame player: 'Manu' playCard: (Redo to: (TargetPlayer pointing: 'Manu')).
 	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
-	self assert: (self cardsOf: 'Manu' in: aGame) equals: 1.
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
 	aGame playTurn.
+	aGame player: 'Manu' playCard: (Redo to: (TargetPlayer pointing: 'Manu')).
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 1.
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
 	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
 	aGame playTurn.
@@ -818,7 +832,7 @@ GameTest >> testWormholeMakesManuNotFinishAGame [
 	self assert: aGame hasFinished not
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 GameTest >> whereIs: aPlayer in: aGame [
 	^ aGame atPodium: (aGame podiumOf: aPlayer)
 ]

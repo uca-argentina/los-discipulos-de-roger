@@ -19,17 +19,17 @@ Target >> = aTarget [
 		ifFalse: [ false ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 Target >> initializePointingTo: anObjective [ 
 	objective := anObjective.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 Target >> isValid [
 	self subclassResponsibility
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Target >> objective [
 	^objective
 ]

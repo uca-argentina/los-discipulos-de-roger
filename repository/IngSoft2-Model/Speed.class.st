@@ -11,14 +11,14 @@ Speed class >> to: aTarget [
 	^ self new initializeWithTarget: aTarget
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #playing }
 Speed >> triggerEffectFor: aGame [ 
 	((target objective )= (aGame actualPlayer)) ifTrue: [ aGame moveActualPlayerForward: 1 ]
 ]
 
-{ #category : #'as yet unclassified' }
-Speed >> useEffectFor: aGame [
+{ #category : #playing }
+Speed >> useEffectFor: aGame by: aPlayer [
 	target isValid
 		ifFalse: [ InvalidAction signal: 'Cannot be used without a target' ].
-	aGame addPermanent: self
+	aGame addPermanent: self by: aPlayer.
 ]

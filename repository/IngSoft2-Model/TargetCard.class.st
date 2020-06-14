@@ -4,7 +4,7 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 TargetCard >> isValid [
 	^true
 ]

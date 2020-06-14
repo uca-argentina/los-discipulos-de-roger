@@ -29,7 +29,7 @@ BoardGenerator >> add: aNumberOfFields  of: aField [
 	aNumberOfFields timesRepeat: [ fields add: aField]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #building }
 BoardGenerator >> buildOf: aNumberOfFields [
 	| random arrayOfFields |
 	aNumberOfFields > 0
@@ -42,7 +42,7 @@ BoardGenerator >> buildOf: aNumberOfFields [
 	^ Board withFields: arrayOfFields
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #building }
 BoardGenerator >> completeFields [
 
 fields size <100 ifTrue: [ self add: (100 - fields size) of: NoEffect new  ]
