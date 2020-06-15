@@ -5,6 +5,17 @@ Class {
 }
 
 { #category : #tests }
+CardTest >> assertAverageIsBetween16and17Of: overloadCount [
+	self
+		assert: ((self averagePercentOf: overloadCount) between: 16 and: 17)
+]
+
+{ #category : #tests }
+CardTest >> averagePercentOf: overloadCount [
+	^ (overloadCount / 100000)*100
+]
+
+{ #category : #tests }
 CardTest >> testCancellationCannotBeInitializeWithATargetPlayer [
 	self
 		should: [ Cancellation to: (TargetPlayer pointing: 'Manu') ]
@@ -27,12 +38,12 @@ CardTest >> testCardDeckHasUniformDistribution [
 		count: [ :card | card isMemberOf: Cancellation ].
 	redoCount := cardsDrawn count: [ :card | card isMemberOf: Redo ].
 	repeatCount := cardsDrawn count: [ :card | card isMemberOf: Repeat ].
-	self assert: (overloadCount // 1000 between: 16 and: 17).
-	self assert: (speedCount // 1000 between: 16 and: 17).
-	self assert: (accelerationCount // 1000 between: 16 and: 17).
-	self assert: (cancellationCount // 1000 between: 16 and: 17).
-	self assert: (redoCount // 1000 between: 16 and: 17).
-	self assert: (repeatCount // 1000 between: 16 and: 17)
+	self assertAverageIsBetween16and17Of: overloadCount.
+	self assertAverageIsBetween16and17Of: speedCount.
+	self assertAverageIsBetween16and17Of: accelerationCount.
+	self assertAverageIsBetween16and17Of: cancellationCount.
+	self assertAverageIsBetween16and17Of: redoCount.
+	self assertAverageIsBetween16and17Of: repeatCount
 ]
 
 { #category : #tests }

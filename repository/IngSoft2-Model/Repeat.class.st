@@ -11,5 +11,5 @@ Repeat >> triggerEffectFor: aGame [
 { #category : #playing }
 Repeat >> useEffectFor: aGame by: aPlayer [
 	aGame repeatLastEffect.
-	aGame addToDeck: self.
+	aGame addToDeck: self
 ]

@@ -13,18 +13,18 @@ Card class >> to: aTarget [
 ]
 
 { #category : #comparing }
-Card >> = aCard [ 
-^ (aCard isMemberOf: self class) 
+Card >> = aCard [
+	^ aCard isMemberOf: self class
 ]
 
 { #category : #initialization }
-Card >> initializeWithTarget: aTarget [ 
-	target := aTarget.
+Card >> initializeWithTarget: aTarget [
+	target := aTarget
 ]
 
 { #category : #comparing }
-Card >> isIdenticalTo: aCard [ 
-	^ (aCard = self) & aCard target= target
+Card >> isIdenticalTo: aCard [
+	^ aCard = self & aCard target = target
 ]
 
 { #category : #accessing }

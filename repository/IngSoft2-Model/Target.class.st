@@ -14,14 +14,14 @@ Target class >> pointing: anAcceleration [
 
 { #category : #comparing }
 Target >> = aTarget [
-	^ (aTarget isMemberOf: aTarget class)
+	^ (aTarget isMemberOf: self class)
 		ifTrue: [ objective = aTarget objective ]
 		ifFalse: [ false ]
 ]
 
 { #category : #initialization }
-Target >> initializePointingTo: anObjective [ 
-	objective := anObjective.
+Target >> initializePointingTo: anObjective [
+	objective := anObjective
 ]
 
 { #category : #checking }
@@ -31,5 +31,5 @@ Target >> isValid [
 
 { #category : #accessing }
 Target >> objective [
-	^objective
+	^ objective
 ]

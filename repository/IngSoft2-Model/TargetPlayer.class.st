@@ -12,5 +12,4 @@ TargetPlayer >> initializePointingTo: aPlayerName [
 
 { #category : #checking }
 TargetPlayer >> isValid [
-	^true
 ]

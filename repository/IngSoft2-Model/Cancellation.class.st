@@ -18,8 +18,7 @@ Cancellation >> triggerEffectFor: aGame [
 
 { #category : #playing }
 Cancellation >> useEffectFor: aGame by: aPlayer [
-	target isValid
-		ifFalse: [ InvalidAction signal: 'Cannot be used without a target' ].
+	target isValid.
 	aGame removePermanentCard: target objective.
 	aGame addToDeck: self
 ]

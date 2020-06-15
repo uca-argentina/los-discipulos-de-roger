@@ -19,7 +19,6 @@ Overload >> triggerEffectFor: aGame [
 
 { #category : #playing }
 Overload >> useEffectFor: aGame by: aPlayer [
-	target isValid
-		ifFalse: [ InvalidAction signal: 'Cannot be used without a target' ].
-	aGame addPermanent: self by: aPlayer.
+	target isValid.
+	aGame addPermanent: self by: aPlayer
 ]

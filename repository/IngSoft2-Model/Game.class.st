@@ -9,7 +9,7 @@ Class {
 		'scoreboard',
 		'board',
 		'deck',
-		'thrownCards'
+		'cardHistory'
 	],
 	#category : #'IngSoft2-Model-Game'
 }
@@ -41,7 +41,7 @@ Game class >> with: dice on: aBoard playedBy: players withLaps: laps shuffling: 
 
 { #category : #playing }
 Game >> activatePermanentEffects [
-	thrownCards  do: [ :aCard | aCard triggerEffectFor: self ]
+	cardHistory triggerEffectsFor: self
 ]
 
 { #category : #accessing }
@@ -57,7 +57,7 @@ Game >> addPermanent: aCard by: aPlayer [
 
 { #category : #playing }
 Game >> addToDeck: aCard [
-	thrownCards  add: aCard
+	cardHistory   add: aCard
 ]
 
 { #category : #results }
@@ -108,7 +108,7 @@ Game >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: amm
 	state := Started new.
 	laps := ammountLaps. 
 	scoreboard := Scoreboard withRows: rows.
-	thrownCards  := OrderedCollection new.
+	cardHistory   := CardHistory new.
 	
 ]
 
@@ -119,7 +119,7 @@ Game >> laps [
 
 { #category : #accessing }
 Game >> lastCard [
-	^thrownCards  last copy
+	^cardHistory last
 ]
 
 { #category : #accessing }
@@ -209,11 +209,7 @@ Game >> podiumOf: aScoreboardRaw [
 
 { #category : #playing }
 Game >> removePermanentCard: aCard [
-	| aColl |
-	aColl :=  thrownCards select: [ :card | (card isIdenticalTo: aCard) ].
-	aColl isEmpty ifFalse: [aColl removeFirst].
-	thrownCards :=(thrownCards select: [ :card | (card isIdenticalTo: aCard) not]) addAll: aColl.
-	
+	cardHistory remove: aCard
 ]
 
 { #category : #playing }

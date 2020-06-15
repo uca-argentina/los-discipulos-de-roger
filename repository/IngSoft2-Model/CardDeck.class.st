@@ -32,12 +32,12 @@ CardDeck class >> withAllCards [
 { #category : #accessing }
 CardDeck >> draw [
 	| aCard |
-	aCard := (cards at: (source nextInt: cards size)).
+	aCard := cards at: (source nextInt: cards size).
 	^ aCard copy
 ]
 
 { #category : #initialization }
 CardDeck >> initializeWithCardTypes: aCollection of: aSource [
 	cards := aCollection.
-	source := aSource.
+	source := aSource
 ]

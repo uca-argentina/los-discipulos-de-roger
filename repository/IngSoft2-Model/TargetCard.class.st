@@ -6,5 +6,4 @@ Class {
 
 { #category : #checking }
 TargetCard >> isValid [
-	^true
 ]
