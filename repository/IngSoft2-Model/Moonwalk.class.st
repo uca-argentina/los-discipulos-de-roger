@@ -1,6 +1,6 @@
 Class {
 	#name : #Moonwalk,
-	#superclass : #Object,
+	#superclass : #Field,
 	#instVars : [
 		'fieldsToMove'
 	],

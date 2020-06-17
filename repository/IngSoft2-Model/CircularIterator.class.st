@@ -30,6 +30,13 @@ CircularIterator >> current [
 	^options at: currentIndex + 1
 ]
 
+{ #category : #iterating }
+CircularIterator >> goBack [
+	currentIndex := currentIndex - 1.
+	currentIndex < 0
+		ifTrue: [ currentIndex := options size - 1 ]
+]
+
 { #category : #testing }
 CircularIterator >> includes: anObject [
 

@@ -1,10 +1,10 @@
 Class {
-	#name : #Wormhole,
+	#name : #PickCard,
 	#superclass : #Field,
 	#category : #'IngSoft2-Model-Board'
 }
 
 { #category : #playing }
-Wormhole >> triggerEffectFor: aGame [
-	aGame moveActualPlayerBackwards: 4.
+PickCard >> triggerEffectFor: aGame [ 
+	aGame pickCardForActualPlayer.
 ]

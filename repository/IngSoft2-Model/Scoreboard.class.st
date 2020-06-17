@@ -31,7 +31,7 @@ Scoreboard >> first [
 { #category : #accesing }
 Scoreboard >> indexOf: aName [
 	| aRow |
-	aRow:= ScoreboardRaw ofPlayerNamed: aName.
+	aRow:= Player ofPlayerNamed: aName.
 	(rowList includes: aRow) ifFalse: [ InvalidAction signal: 'El player no esta jugando.' ].
 	^ rowList indexOf: aRow
 ]

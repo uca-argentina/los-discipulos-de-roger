@@ -2,7 +2,8 @@ Class {
 	#name : #Board,
 	#superclass : #Object,
 	#instVars : [
-		'fields'
+		'fields',
+		'lastEffect'
 	],
 	#category : #'IngSoft2-Model-Board'
 }
@@ -26,6 +27,7 @@ Board >> fields [
 { #category : #initialization }
 Board >> initializeWithFields: arrayOfFields [
 fields := arrayOfFields.
+lastEffect := NoEffect new.
 
 ]
 
@@ -36,5 +38,12 @@ Board >> length [
 
 { #category : #playing }
 Board >> triggerFor: aGame [ 
-	(fields at: (aGame actualPlayer position)+1) triggerEffectFor: aGame.
+	lastEffect := fields at: (aGame actualPlayer position)+1.
+	self triggerLastFor: aGame.
+	
+]
+
+{ #category : #playing }
+Board >> triggerLastFor: aGame [ 
+	lastEffect triggerEffectFor: aGame
 ]

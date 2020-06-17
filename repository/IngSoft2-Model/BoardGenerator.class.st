@@ -10,11 +10,11 @@ Class {
 { #category : #'as yet unclassified' }
 BoardGenerator class >> ucaGameDefault [ 
 	| aBoardGenerator |
-	aBoardGenerator := self with: 48 of: NoEffect.
-	aBoardGenerator add: 20 of: SpeedUp.
-	aBoardGenerator add: 20 of: Wormhole.
-	aBoardGenerator add: 10 of: Moonwalk.
-	aBoardGenerator add: 2 of: AtomicBomb.
+	aBoardGenerator := self with: 48 of: NoEffect new.
+	aBoardGenerator add: 20 of: SpeedUp new.
+	aBoardGenerator add: 20 of: Wormhole new.
+	aBoardGenerator add: 10 of: Moonwalk createField .
+	aBoardGenerator add: 2 of: AtomicBomb new.
 	^ aBoardGenerator
 ]
 
@@ -29,7 +29,7 @@ BoardGenerator >> add: aNumberOfFields  of: aField [
 	aNumberOfFields timesRepeat: [ fields add: aField]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #building }
 BoardGenerator >> buildOf: aNumberOfFields [
 	| random arrayOfFields |
 	aNumberOfFields > 0
@@ -42,7 +42,7 @@ BoardGenerator >> buildOf: aNumberOfFields [
 	^ Board withFields: arrayOfFields
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #building }
 BoardGenerator >> completeFields [
 
 fields size <100 ifTrue: [ self add: (100 - fields size) of: NoEffect new  ]
@@ -51,7 +51,7 @@ fields size <100 ifTrue: [ self add: (100 - fields size) of: NoEffect new  ]
 { #category : #initialization }
 BoardGenerator >> initializeWith: aNumberOfFields  of: aFieldClass [  
 	fields := OrderedCollection new.
-	self add: aNumberOfFields   of: aFieldClass 
+	self add: aNumberOfFields   of: aFieldClass
 ]
 
 { #category : #accessing }

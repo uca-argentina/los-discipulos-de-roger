@@ -1,41 +1,42 @@
 Class {
-	#name : #ScoreboardRaw,
+	#name : #Player,
 	#superclass : #Object,
 	#instVars : [
 		'playerName',
 		'position',
-		'laps'
+		'laps',
+		'hand'
 	],
 	#category : #'IngSoft2-Model-Scoreboard'
 }
 
 { #category : #instanceCreation }
-ScoreboardRaw class >> ofPlayerNamed: aNameSurname [
+Player class >> ofPlayerNamed: aNameSurname [
 		aNameSurname isEmpty 
 		ifTrue: [ InstanceCreationFailed
 				signal: 'The player name cannot be blank' ].
 		
-		^self new 
+		^self new
 		initializeWithName: aNameSurname
 ]
 
 { #category : #comparing }
-ScoreboardRaw >> != aScoreboardRaw [ 
+Player >> != aScoreboardRaw [ 
 	^ (self = aScoreboardRaw) not
 ]
 
 { #category : #comparing }
-ScoreboardRaw >> = aScoreboardRaw [  
+Player >> = aScoreboardRaw [  
 	^ (playerName = aScoreboardRaw playerName)
 ]
 
 { #category : #comparing }
-ScoreboardRaw >> >= aPlayer [ 
+Player >> >= aPlayer [ 
 	^laps > (aPlayer laps) | (laps = aPlayer laps & (position > aPlayer position))
 ]
 
 { #category : #playing }
-ScoreboardRaw >> addLap: lapsToMove andMove: aMovement [
+Player >> addLap: lapsToMove andMove: aMovement [
 
 	laps := laps + lapsToMove.
 	self resetPosition.
@@ -43,51 +44,77 @@ ScoreboardRaw >> addLap: lapsToMove andMove: aMovement [
 	self checkLapCount.
 ]
 
+{ #category : #accessing }
+Player >> cardCount [
+	^hand size
+]
+
 { #category : #playing }
-ScoreboardRaw >> checkLapCount [
+Player >> checkLapCount [
 	laps < 0
 		ifTrue: [ self resetLapsAndPosition ]
 ]
 
+{ #category : #accessing }
+Player >> getCardAt: index [
+	^ hand removeAt: index
+]
+
 { #category : #initialization }
-ScoreboardRaw >> initializeWithName: aName [
+Player >> initializeWithName: aName [
 	playerName := aName.
 	position := 0.
 	laps := 0.
+	hand := OrderedCollection new.
 ]
 
 { #category : #accessing }
-ScoreboardRaw >> laps [
+Player >> laps [
 	^ laps
 ]
 
 { #category : #playing }
-ScoreboardRaw >> move: aMovement [
+Player >> layCard: aCardType for: aGame [
+	| index |
+	index := hand indexOf: aCardType.
+	index > 0
+		ifFalse: [ InvalidAction signal: 'Player does not have this type of card' ].
+	aCardType useEffectFor: aGame by: self.
+	self getCardAt: index
+]
+
+{ #category : #playing }
+Player >> move: aMovement [
 	position := position + aMovement.
 ]
 
 { #category : #accessing }
-ScoreboardRaw >> name [
+Player >> name [
 	^playerName
 ]
 
+{ #category : #playing }
+Player >> pick: anInteger from: aCardDeck [
+	anInteger timesRepeat: [ hand add: aCardDeck draw  ].
+]
+
 { #category : #accessing }
-ScoreboardRaw >> playerName [
+Player >> playerName [
 	^ playerName
 ]
 
 { #category : #accessing }
-ScoreboardRaw >> position [
+Player >> position [
 	^position
 ]
 
 { #category : #playing }
-ScoreboardRaw >> resetLapsAndPosition [
+Player >> resetLapsAndPosition [
 	laps := 0.
 	self resetPosition
 ]
 
 { #category : #playing }
-ScoreboardRaw >> resetPosition [
+Player >> resetPosition [
 	position := 0.
 ]

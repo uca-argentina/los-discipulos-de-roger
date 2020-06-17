@@ -4,7 +4,7 @@ Class {
 	#category : #'IngSoft2-Model-Game'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 Finished >> canPlay [
 	^false.
 ]

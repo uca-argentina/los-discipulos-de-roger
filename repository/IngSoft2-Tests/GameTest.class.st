@@ -7,10 +7,24 @@ Class {
 		'aNoEffect',
 		'aWormhole',
 		'anAtomicBomb',
-		'aSpeedUp'
+		'aSpeedUp',
+		'anAcceleration',
+		'aCancellation',
+		'anOverload',
+		'aSpeed',
+		'aRedo',
+		'aRepeat',
+		'targetFran',
+		'targetManu',
+		'nonTarget'
 	],
 	#category : #'IngSoft2-Tests-Game-Tests'
 }
+
+{ #category : #checking }
+GameTest >> cardsOf: aPlayer in: aGame [
+	^ (self whereIs: aPlayer in: aGame) cardCount 
+]
 
 { #category : #tests }
 GameTest >> finalBoard [
@@ -28,7 +42,7 @@ GameTest >> finalBoard [
 	^ anArrayOfFields
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 GameTest >> lapsOf: aPlayer in: aGame [
 	^ (self whereIs: aPlayer in: aGame) laps
 ]
@@ -41,6 +55,16 @@ GameTest >> noEffectBoardOf12 [
 ]
 
 { #category : #tests }
+GameTest >> playUntilFinished: aGame [
+	[ aGame hasFinished ] whileFalse: [ self some: (aGame actualPlayer name) playCardFor: aGame. aGame playTurn ].
+]
+
+{ #category : #'as yet unclassified' }
+GameTest >> playUntilFinishedWithOutCardsA: aGame [
+	[ aGame hasFinished ] whileFalse: [ aGame playTurn ]
+]
+
+{ #category : #tests }
 GameTest >> positionOf: aPlayer in: aGame [
 	^ (self whereIs: aPlayer in: aGame) position
 ]
@@ -48,68 +72,84 @@ GameTest >> positionOf: aPlayer in: aGame [
 { #category : #running }
 GameTest >> setUp [
 	"Hooks that subclasses may override to define the fixture of test."
-
+	super setUp.
 	players := OrderedCollection withAll: {'Fran' . 'Manu'}.
 	die := Die of: 6 rolling: #(4 1).
 	aNoEffect := NoEffect new.
 	aWormhole := Wormhole new.
 	anAtomicBomb := AtomicBomb new.
-	aSpeedUp := SpeedUp new
+	aSpeedUp := SpeedUp new.
+	anAcceleration := Acceleration to: NonTarget new.
+	aCancellation := Cancellation  to: NonTarget new.
+	anOverload := Overload  to: NonTarget new.
+	aSpeed := Speed  to: NonTarget new.
+	aRedo := Redo  to: NonTarget new.
+	aRepeat := Repeat to: NonTarget new.
+	targetFran := TargetPlayer pointing: 'Fran'.
+	targetManu := TargetPlayer pointing: 'Manu'.
+	nonTarget := NonTarget new.
+]
+
+{ #category : #'as yet unclassified' }
+GameTest >> some: player playCardFor: aGame [ 
+		[ 
+	
+	aGame player: player playCard: (Overload to: targetManu).
+	aGame player: player playCard: (Speed to: targetFran).
+	aGame player: player playCard: (Acceleration to: nonTarget).
+	aGame player: player playCard: (Cancellation to: anAcceleration).
+	aGame player: player playCard: (Redo to: targetFran).
+	aGame player: player playCard: (Repeat to: nonTarget) ]
+		on: InvalidAction
+		do: [  ].
 ]
 
 { #category : #tests }
-GameTest >> test03WithMultipleDice [
+GameTest >> testActivateCancellationOfNonPlayedCard [
 	| aGame |
-	aGame := Game
-		with: die + (Die of: 8 rolling: #(7 3))
-		playedBy: players
-		on: self noEffectBoardOf12.
-	aGame playUntilFinished.
-	self assert: aGame hasFinished
-]
-
-{ #category : #tests }
-GameTest >> test05PlayGame [
-	| aGame aPlayer |
-	aPlayer := 'Fran'.
 	aGame := Game
 		with: (Die of: 6 rolling: #(4))
-		playedBy: {aPlayer}
-		on: self noEffectBoardOf12.
-	3 timesRepeat: [ aGame playTurn ].
-	self assert: aGame hasFinished
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{aCancellation.
+					anAcceleration}
+				of: #(1 2)).
+	aGame
+		player: 'Manu'
+		playCard: (Cancellation to: (TargetCard pointing: anAcceleration)).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
 ]
 
 { #category : #tests }
-GameTest >> test06PlayAGameAndFranWins [
+GameTest >> testCannotAskForPodiumPositionOfAPlayerThatIsNotInTheGame [
+	| aGame aThirdPlayer |
+	aThirdPlayer := 'Julivrone'.
+	aGame := Game
+		with: (Die of: 6 rolling: #(6 5 1))
+		on: self noEffectBoardOf12
+		playedBy: players.
+	self
+		should: [ aGame podiumOf: aThirdPlayer ]
+		raise: InvalidAction
+		withMessageText: 'El player no esta jugando.'
+]
+
+{ #category : #tests }
+GameTest >> testCannotAskForWinnerOfAnUnfinishedGame [
 	| aGame |
 	aGame := Game
 		with: (Die of: 6 rolling: #(4 1))
-		playedBy: players
-		on: self noEffectBoardOf12.
-	aGame playUntilFinished.
-	self assert: aGame winner name equals: 'Fran'
-]
-
-{ #category : #tests }
-GameTest >> test07PlayAGameAndFranSecondAndManuFirst [
-	| aGame |
-	aGame := Game
-		with: (Die of: 6 rolling: #(1 4))
-		playedBy: players
-		on: self noEffectBoardOf12.
-	aGame playUntilFinished.
-	self assert: (aGame atPodium: 2) name equals: 'Fran'.
-	self assert: (aGame atPodium: 1) name equals: 'Manu'
-]
-
-{ #category : #tests }
-GameTest >> test08CannotAskForWinnerOfAnUnfinishedGame [
-	| aGame |
-	aGame := Game
-		with: (Die of: 6 rolling: #(4 1))
-		playedBy: players
-		on: self noEffectBoardOf12.
+		on: self noEffectBoardOf12
+		playedBy: players.
 	aGame playTurn.
 	self
 		should: [ aGame winner ]
@@ -118,227 +158,21 @@ GameTest >> test08CannotAskForWinnerOfAnUnfinishedGame [
 ]
 
 { #category : #tests }
-GameTest >> test09InstanceCreationAndAccessing [
+GameTest >> testCannotPlayAFinishedGame [
 	| aGame |
 	aGame := Game
-		with: die
-		on: (BoardGenerator ucaGameDefault buildOf: 10)
-		playedBy: players
-		withLaps: 9.
-	self assert: aGame laps equals: 9.
-	self assert: aGame dice equals: die.
-	self assert: aGame length equals: 10
-]
-
-{ #category : #tests }
-GameTest >> test10ManuMakes2LapsAndWin [
-	| aGame |
-	aGame := Game
-		with: (Die of: 6 rolling: #(1 4))
+		with: (Die of: 6 rolling: #(4 1))
 		on: self noEffectBoardOf12
-		playedBy: players
-		withLaps: 2.
-	aGame playUntilFinished.
-	self assert: aGame hasFinished.
-	self assert: aGame winner laps equals: 2
-]
-
-{ #category : #tests }
-GameTest >> test11TriggerAWormHole [
-	| actualPlayer aGame |
-	actualPlayer := 'Manu'.
-	aGame := Game
-		with: (Die of: 6 rolling: #(6))
-		on: ((BoardGenerator with: 10 of: Wormhole new) buildOf: 10)
-		playedBy: {actualPlayer}
-		withLaps: 1.
-	self assert: (self positionOf: actualPlayer in: aGame) equals: 0.
-	aGame playTurn.
-	self assert: aGame actualPlayer position equals: 2
-]
-
-{ #category : #tests }
-GameTest >> test12TriggerASpeedUp [
-	| aGame actualPlayer |
-	actualPlayer := 'Manu'.
-	aGame := Game
-		with: (Die of: 6 rolling: #(6))
-		on: ((BoardGenerator with: 10 of: SpeedUp new) buildOf: 10)
-		playedBy: {actualPlayer}
-		withLaps: 1.
-	self assert: (self positionOf: actualPlayer in: aGame) equals: 0.
-	aGame playTurn.
-	self assert: (self positionOf: actualPlayer in: aGame) equals: 0.
-	self assert: (self lapsOf: actualPlayer in: aGame) equals: 1.
-	self assert: aGame hasFinished
-]
-
-{ #category : #tests }
-GameTest >> test13TriggerAaMoonWalkAndAnotherPlayerStaysAtStart [
-	| aGame |
-	aGame := Game
-		with: (Die of: 6 rolling: #(6))
-		on: ((BoardGenerator with: 10 of: Moonwalk createField) buildOf: 10)
-		playedBy: players
-		withLaps: 1.
-	aGame playTurn.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
-	self assert: (aGame podiumOf: 'Fran') equals: 1
-]
-
-{ #category : #tests }
-GameTest >> test14TriggerAaMoonWalkAndAPlayerMoves [
-	| aGame boardGen |
-	boardGen := BoardGenerator with: 1 of: (Moonwalk createField: 5).
-	aGame := Game
-		with: (Die of: 6 rolling: #(6))
-		on: (boardGen buildOf: 10)
-		playedBy: players
-		withLaps: 1.
-	2 timesRepeat: [ aGame playTurn ].
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 1
-]
-
-{ #category : #tests }
-GameTest >> test15TriggerAnAtomicBombAtStartDoesNothing [
-	| aGame |
-	aGame := Game
-		with: (Die of: 6 rolling: #(6))
-		on: ((BoardGenerator with: 10 of: AtomicBomb new) buildOf: 10)
-		playedBy: players
-		withLaps: 1.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
-	aGame playTurn.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
-]
-
-{ #category : #tests }
-GameTest >> test16PlayAGameAndGetPodiumPositionOfEachPlayer [
-	| aGame aThirdPlayer |
-	aThirdPlayer := 'Julivrone'.
-	players add: aThirdPlayer.
-	aGame := Game
-		with: (Die of: 6 rolling: #(5 6 1))
-		playedBy: players
-		on: self noEffectBoardOf12.
-	3 timesRepeat: [ aGame playTurn ].
-	self assert: (aGame podiumOf: 'Fran') equals: 2.
-	self assert: (aGame podiumOf: 'Manu') equals: 1.
-	self assert: (aGame podiumOf: aThirdPlayer) equals: 3
-]
-
-{ #category : #tests }
-GameTest >> test17CannotAskForPodiumPositionOfAPlayerThatIsNotInTheGame [
-	| aGame aThirdPlayer |
-	aThirdPlayer := 'Julivrone'.
-	aGame := Game
-		with: (Die of: 6 rolling: #(6 5 1))
-		playedBy: players
-		on: self noEffectBoardOf12.
+		playedBy: players.
+	self playUntilFinishedWithOutCardsA: aGame .
 	self
-		should: [ aGame podiumOf: aThirdPlayer ]
+		should: [ aGame playTurn ]
 		raise: InvalidAction
-		withMessageText: 'El player no esta jugando.'
+		withMessageText: 'Cannot play a finished game.'
 ]
 
 { #category : #tests }
-GameTest >> test18TriggerWormholeAndDismishTheLaps [
-	| aGame actualPlayer anArrayOfFields |
-	actualPlayer := 'Manu'.
-	anArrayOfFields := OrderedCollection new.
-	anArrayOfFields add: aNoEffect.
-	anArrayOfFields add: aWormhole.
-	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
-		with: (Die of: 6 rolling: #(1 6))
-		on: (Board withFields: anArrayOfFields)
-		playedBy: {actualPlayer}
-		withLaps: 2.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
-	aGame playTurn.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
-	aGame playTurn.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
-	self assert: (self lapsOf: 'Manu' in: aGame) equals: 1.
-	aGame playTurn.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 3.
-	self assert: (self lapsOf: 'Manu' in: aGame) equals: 0
-]
-
-{ #category : #tests }
-GameTest >> test19ManuTriggersMoonwalkAndLapCountDiminishesForFran [
-	| aGame anArrayOfFields aMoonwalk |
-	aMoonwalk := Moonwalk createField: 5.
-	anArrayOfFields := OrderedCollection new.
-	anArrayOfFields add: aNoEffect.
-	anArrayOfFields add: aMoonwalk.
-	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
-		with: (Die of: 10 rolling: #(10 1))
-		on: (Board withFields: anArrayOfFields)
-		playedBy: players
-		withLaps: 2.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
-	aGame playTurn.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
-	self assert: (self lapsOf: 'Fran' in: aGame) equals: 1.
-	aGame playTurn.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 1.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
-	self assert: (self lapsOf: 'Fran' in: aGame) equals: 0
-]
-
-{ #category : #tests }
-GameTest >> test20ManuTriggersMoonwalkAndBecomesFirstInPodium [
-	| aGame anArrayOfFields aMoonwalk |
-	aMoonwalk := Moonwalk createField: 10.
-	anArrayOfFields := OrderedCollection new.
-	anArrayOfFields add: aNoEffect.
-	anArrayOfFields add: aMoonwalk.
-	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
-		with: (Die of: 10 rolling: #(10 1))
-		on: (Board withFields: anArrayOfFields)
-		playedBy: players
-		withLaps: 2.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
-	aGame playTurn.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
-	self assert: (self lapsOf: 'Fran' in: aGame) equals: 1.
-	aGame playTurn.
-	self assert: (aGame podiumOf: 'Manu') equals: 1.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 1.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
-	self assert: (self lapsOf: 'Fran' in: aGame) equals: 0
-]
-
-{ #category : #tests }
-GameTest >> test21ManuTriggersAtomicBombAndLapCountDoesNotDiminishForFran [
-	| aGame  anArrayOfFields  |
-
-	anArrayOfFields := OrderedCollection new.
-	anArrayOfFields add: aNoEffect.
-	anArrayOfFields add: anAtomicBomb.
-	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
-		with: (Die of: 10 rolling: #(10 1))
-		on: (Board withFields: anArrayOfFields)
-		playedBy: players
-		withLaps: 2.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
-	aGame playTurn.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
-	self assert: (self lapsOf: 'Fran' in: aGame) equals: 1.
-	aGame playTurn.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
-	self assert: (self lapsOf: 'Fran' in: aGame) equals: 1
-]
-
-{ #category : #tests }
-GameTest >> test22DueloDeTitanes [
+GameTest >> testDueloDeTitanes [
 	| aGame |
 	aGame := Game
 		with: (Die of: 6 rolling: #(4 6 1 1))
@@ -419,21 +253,178 @@ GameTest >> test22DueloDeTitanes [
 ]
 
 { #category : #tests }
-GameTest >> test23CannotPlayAFinishedGame [
-	| aGame |
+GameTest >> testGetTwoCardsAtGameStart [
+	| aGame aPlayer |
+	aPlayer := 'Fran'.
 	aGame := Game
-		with: (Die of: 6 rolling: #(4 1))
-		playedBy: players
-		on: self noEffectBoardOf12.
-	aGame playUntilFinished.
-	self
-		should: [ aGame playTurn ]
-		raise: InvalidAction
-		withMessageText: 'Cannot play a finished game.'
+		with: die
+		on: self noEffectBoardOf12
+		playedBy: {aPlayer}.
+	self assert: aGame actualPlayer cardCount equals: 2
 ]
 
 { #category : #tests }
-GameTest >> test24ASpeedUpMakesManuGoFirst [
+GameTest >> testInstanceCreationAndAccessing [
+	| aGame |
+	aGame := Game
+		with: die
+		on: (BoardGenerator ucaGameDefault buildOf: 10)
+		playedBy: players
+		withLaps: 9.
+	self assert: aGame laps equals: 9.
+	self assert: aGame dice equals: die.
+	self assert: aGame length equals: 10
+]
+
+{ #category : #tests }
+GameTest >> testManuCantPlayPermanentCardBecauseItsNotHisTurn [
+	| aGame |
+	aGame := Game
+		with: die
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {anAcceleration }).
+	
+	self should: [ aGame player: 'Manu' playCard: anAcceleration. ] raise: InvalidAction withMessageText: 'It is not the card bearers turn'.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+]
+
+{ #category : #tests }
+GameTest >> testManuMakes2LapsAndWin [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(1 4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 2.
+	self playUntilFinishedWithOutCardsA: aGame. 
+	self assert: aGame hasFinished.
+	self assert: aGame winner laps equals: 2
+]
+
+{ #category : #tests }
+GameTest >> testManuTriggersAtomicBombAndLapCountDoesNotDiminishForFran [
+	| aGame anArrayOfFields |
+	anArrayOfFields := OrderedCollection new.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: anAtomicBomb.
+	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	aGame := Game
+		with: (Die of: 10 rolling: #(10 1))
+		on: (Board withFields: anArrayOfFields)
+		playedBy: players
+		withLaps: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	self assert: (self lapsOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self lapsOf: 'Fran' in: aGame) equals: 1
+]
+
+{ #category : #tests }
+GameTest >> testManuTriggersMoonwalkAndBecomesFirstInPodium [
+	| aGame anArrayOfFields aMoonwalk |
+	aMoonwalk := Moonwalk createField: 10.
+	anArrayOfFields := OrderedCollection new.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: aMoonwalk.
+	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	aGame := Game
+		with: (Die of: 10 rolling: #(10 1))
+		on: (Board withFields: anArrayOfFields)
+		playedBy: players
+		withLaps: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	self assert: (self lapsOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn.
+	self assert: (aGame podiumOf: 'Manu') equals: 1.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self lapsOf: 'Fran' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+GameTest >> testManuTriggersMoonwalkAndLapCountDiminishesForFran [
+	| aGame anArrayOfFields aMoonwalk |
+	aMoonwalk := Moonwalk createField: 5.
+	anArrayOfFields := OrderedCollection new.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: aMoonwalk.
+	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	aGame := Game
+		with: (Die of: 10 rolling: #(10 1))
+		on: (Board withFields: anArrayOfFields)
+		playedBy: players
+		withLaps: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	self assert: (self lapsOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self lapsOf: 'Fran' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+GameTest >> testPlayAGameAndFranSecondAndManuFirst [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(1 4))
+		on: self noEffectBoardOf12
+		playedBy: players.
+	self playUntilFinishedWithOutCardsA: aGame. 
+	self assert: (aGame atPodium: 2) name equals: 'Fran'.
+	self assert: (aGame atPodium: 1) name equals: 'Manu'
+]
+
+{ #category : #tests }
+GameTest >> testPlayAGameAndFranWins [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4 1))
+		on: self noEffectBoardOf12
+		playedBy: players.
+	self playUntilFinishedWithOutCardsA: aGame. 
+	self assert: aGame winner name equals: 'Fran'
+]
+
+{ #category : #tests }
+GameTest >> testPlayAGameAndGetPodiumPositionOfEachPlayer [
+	| aGame aThirdPlayer |
+	aThirdPlayer := 'Julivrone'.
+	players add: aThirdPlayer.
+	aGame := Game
+		with: (Die of: 6 rolling: #(5 6 1))
+		on: self noEffectBoardOf12
+		playedBy: players.
+	3 timesRepeat: [ aGame playTurn ].
+	self assert: (aGame podiumOf: 'Fran') equals: 2.
+	self assert: (aGame podiumOf: 'Manu') equals: 1.
+	self assert: (aGame podiumOf: aThirdPlayer) equals: 3
+]
+
+{ #category : #tests }
+GameTest >> testPlayGame [
+	| aGame aPlayer |
+	aPlayer := 'Fran'.
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: {aPlayer}.
+	3 timesRepeat: [ aGame playTurn ].
+	self assert: aGame hasFinished
+]
+
+{ #category : #tests }
+GameTest >> testSpeedUpMakesManuGoFirst [
 	| aGame anArrayOfFields |
 	anArrayOfFields := OrderedCollection new.
 	anArrayOfFields add: aNoEffect.
@@ -453,7 +444,424 @@ GameTest >> test24ASpeedUpMakesManuGoFirst [
 ]
 
 { #category : #tests }
-GameTest >> test25WormholeMakesManuNotFinishAGame [
+GameTest >> testTitanShowdown [
+	| aGame |
+	aGame := Game
+		with: Die d6
+		on: (BoardGenerator ucaGameDefault buildOf: 20)
+		playedBy: players
+		withLaps: 3
+		shuffling: CardDeck withAllCards.
+	self playUntilFinished: aGame.
+	self assert: aGame hasFinished.
+]
+
+{ #category : #tests }
+GameTest >> testTriggerAPickCard [
+	| actualPlayer aGame |
+	actualPlayer := 'Manu'.
+	aGame := Game
+		with: die
+		on: ((BoardGenerator with: 10 of: PickCard new) buildOf: 10)
+		playedBy: {actualPlayer}
+		withLaps: 1.
+	self assert: aGame actualPlayer cardCount equals: 2.
+	aGame playTurn.
+	self assert: aGame actualPlayer cardCount equals: 3.
+]
+
+{ #category : #tests }
+GameTest >> testTriggerASpeedUp [
+	| aGame actualPlayer |
+	actualPlayer := 'Manu'.
+	aGame := Game
+		with: (Die of: 6 rolling: #(6))
+		on: ((BoardGenerator with: 10 of: SpeedUp new) buildOf: 10)
+		playedBy: {actualPlayer}
+		withLaps: 1.
+	self assert: (self positionOf: actualPlayer in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: actualPlayer in: aGame) equals: 0.
+	self assert: (self lapsOf: actualPlayer in: aGame) equals: 1.
+	self assert: aGame hasFinished
+]
+
+{ #category : #tests }
+GameTest >> testTriggerAWormHole [
+	| actualPlayer aGame |
+	actualPlayer := 'Manu'.
+	aGame := Game
+		with: (Die of: 6 rolling: #(6))
+		on: ((BoardGenerator with: 10 of: Wormhole new) buildOf: 10)
+		playedBy: {actualPlayer}
+		withLaps: 1.
+	self assert: (self positionOf: actualPlayer in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: aGame actualPlayer position equals: 2
+]
+
+{ #category : #tests }
+GameTest >> testTriggerAaMoonWalkAndAPlayerMoves [
+	| aGame boardGen |
+	boardGen := BoardGenerator with: 1 of: (Moonwalk createField: 5).
+	aGame := Game
+		with: (Die of: 6 rolling: #(6))
+		on: (boardGen buildOf: 10)
+		playedBy: players
+		withLaps: 1.
+	2 timesRepeat: [ aGame playTurn ].
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1
+]
+
+{ #category : #tests }
+GameTest >> testTriggerAaMoonWalkAndAnotherPlayerStaysAtStart [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(6))
+		on: ((BoardGenerator with: 10 of: Moonwalk createField) buildOf: 10)
+		playedBy: players
+		withLaps: 1.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	self assert: (aGame podiumOf: 'Fran') equals: 1
+]
+
+{ #category : #tests }
+GameTest >> testTriggerAccelerationEffect [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {anAcceleration}).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	aGame player: 'Fran' playCard: anAcceleration.
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame player: 'Manu' playCard: anAcceleration.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 6
+]
+
+{ #category : #tests }
+GameTest >> testTriggerAnAtomicBombAtStartDoesNothing [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(6))
+		on: ((BoardGenerator with: 10 of: AtomicBomb new) buildOf: 10)
+		playedBy: players
+		withLaps: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+GameTest >> testTriggerCancellationEffect [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{aCancellation .
+					anAcceleration}
+				of: #(1 2)).
+	aGame player: 'Fran' playCard: anAcceleration.
+	aGame player: 'Manu' playCard: (Cancellation to: (TargetCard pointing: anAcceleration) ).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+GameTest >> testTriggerCancellationEffectToAnSpecificSpeed [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{aCancellation.
+					aSpeed}
+				of: #(1 2)).
+	aGame player: 'Fran' playCard: (Speed to: targetFran).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	aGame player: 'Manu' playCard: (Speed to: (targetManu)).
+	aGame player: 'Fran' playCard: (Cancellation to: (TargetCard pointing: (Speed to: (targetManu)))).
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 4
+]
+
+{ #category : #tests }
+GameTest >> testTriggerCancellationEffectToAnSpecificSpeedButManuHavingTwoOfThem [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{aCancellation.
+					aSpeed}
+				of: #(2 1 2 2)).
+	aGame player: 'Fran' playCard: (Speed to: targetFran).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	aGame player: 'Manu' playCard: (Speed to: targetManu).
+	aGame player: 'Manu' playCard: (Speed to: targetManu).
+	aGame
+		player: 'Fran'
+		playCard: (Cancellation to: (TargetCard pointing: (Speed to: targetManu))).
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 5
+]
+
+{ #category : #tests }
+GameTest >> testTriggerOverloadEffect [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {anOverload} of: #(1 2)).
+	aGame player: 'Fran' playCard: (Overload to: targetManu).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 2
+]
+
+{ #category : #tests }
+GameTest >> testTriggerRedoAcceleration [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{anAcceleration.
+					aRedo}
+				of: #(1 2)).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	aGame player: 'Fran' playCard: anAcceleration.
+	aGame player: 'Fran' playCard: aRedo.
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 6.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+GameTest >> testTriggerRedoCancellation [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{anAcceleration.
+					aSpeed.
+					aRedo.
+					aCancellation}
+				of: #(1 2 3 4)).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	aGame player: 'Fran' playCard: (Speed to: targetFran).
+	aGame player: 'Fran' playCard: anAcceleration.
+	aGame
+		player: 'Manu'
+		playCard: (Cancellation to: (TargetCard pointing: (Speed to: targetFran))).
+	aGame
+		player: 'Manu'
+		playCard: (Redo to: (TargetCard pointing: anAcceleration)).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+GameTest >> testTriggerRedoRepeat [
+	| aGame anArrayOfFields |
+	anArrayOfFields := OrderedCollection new.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: aSpeedUp.
+	2 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	anArrayOfFields add: aSpeedUp.
+	10 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: (Board withFields: anArrayOfFields)
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{aRepeat.
+					aRedo}
+				of: #(1 2)).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 8.
+	aGame player: 'Fran' playCard: aRepeat.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 12.
+	aGame player: 'Fran' playCard: aRedo.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self lapsOf: 'Fran' in: aGame) equals: 1.
+	self assert: aGame hasFinished
+]
+
+{ #category : #tests }
+GameTest >> testTriggerRedoSpeed [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{aCancellation.
+					aSpeed.
+					aRedo}
+				of: #(2 2 1 3)).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	aGame player: 'Fran' playCard: (Speed to: targetFran).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	aGame player: 'Manu' playCard: (Redo to: targetManu).
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 5
+]
+
+{ #category : #tests }
+GameTest >> testTriggerRepeat [
+	| aGame anArrayOfFields |
+	anArrayOfFields := OrderedCollection new.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: aSpeedUp.
+	2 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	anArrayOfFields add: aSpeedUp.
+	10 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	aGame := Game
+		with: die
+		on: (Board withFields: anArrayOfFields)
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {aRepeat}).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 8.
+	aGame player: 'Fran' playCard: Repeat new.
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 12.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 5.
+	aGame player: 'Fran' playCard: Repeat new.
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 9
+]
+
+{ #category : #tests }
+GameTest >> testTriggerSpeedEffect [
+	| aGame |
+	aGame := Game
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {aSpeed}).
+	aGame player: 'Fran' playCard: (Speed to: (TargetPlayer pointing: 'Fran')).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+GameTest >> testTriggerWormholeAndDismishTheLaps [
+	| aGame actualPlayer anArrayOfFields |
+	actualPlayer := 'Manu'.
+	anArrayOfFields := OrderedCollection new.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: aWormhole.
+	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	aGame := Game
+		with: (Die of: 6 rolling: #(1 6))
+		on: (Board withFields: anArrayOfFields)
+		playedBy: {actualPlayer}
+		withLaps: 2.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	self assert: (self lapsOf: 'Manu' in: aGame) equals: 1.
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 3.
+	self assert: (self lapsOf: 'Manu' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+GameTest >> testWithMultipleDice [
+	| aGame |
+	aGame := Game
+		with: die + (Die of: 8 rolling: #(7 3))
+		on: self noEffectBoardOf12
+		playedBy: players.
+	self playUntilFinishedWithOutCardsA: aGame. 
+	self assert: aGame hasFinished
+]
+
+{ #category : #tests }
+GameTest >> testWormholeMakesManuNotFinishAGame [
 	| aGame actualPlayer anArrayOfFields |
 	actualPlayer := 'Manu'.
 	anArrayOfFields := OrderedCollection new.
@@ -471,7 +879,7 @@ GameTest >> test25WormholeMakesManuNotFinishAGame [
 	self assert: aGame hasFinished not
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #checking }
 GameTest >> whereIs: aPlayer in: aGame [
 	^ aGame atPodium: (aGame podiumOf: aPlayer)
 ]
