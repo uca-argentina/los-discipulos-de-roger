@@ -15,7 +15,8 @@ Class {
 		'aRedo',
 		'aRepeat',
 		'targetFran',
-		'targetManu'
+		'targetManu',
+		'nonTarget'
 	],
 	#category : #'IngSoft2-Tests-Game-Tests'
 }
@@ -54,6 +55,16 @@ GameTest >> noEffectBoardOf12 [
 ]
 
 { #category : #tests }
+GameTest >> playUntilFinished: aGame [
+	[ aGame hasFinished ] whileFalse: [ self some: (aGame actualPlayer name) playCardFor: aGame. aGame playTurn ].
+]
+
+{ #category : #'as yet unclassified' }
+GameTest >> playUntilFinishedWithOutCardsA: aGame [
+	[ aGame hasFinished ] whileFalse: [ aGame playTurn ]
+]
+
+{ #category : #tests }
 GameTest >> positionOf: aPlayer in: aGame [
 	^ (self whereIs: aPlayer in: aGame) position
 ]
@@ -76,6 +87,21 @@ GameTest >> setUp [
 	aRepeat := Repeat to: NonTarget new.
 	targetFran := TargetPlayer pointing: 'Fran'.
 	targetManu := TargetPlayer pointing: 'Manu'.
+	nonTarget := NonTarget new.
+]
+
+{ #category : #'as yet unclassified' }
+GameTest >> some: player playCardFor: aGame [ 
+		[ 
+	
+	aGame player: player playCard: (Overload to: targetManu).
+	aGame player: player playCard: (Speed to: targetFran).
+	aGame player: player playCard: (Acceleration to: nonTarget).
+	aGame player: player playCard: (Cancellation to: anAcceleration).
+	aGame player: player playCard: (Redo to: targetFran).
+	aGame player: player playCard: (Repeat to: nonTarget) ]
+		on: InvalidAction
+		do: [  ].
 ]
 
 { #category : #tests }
@@ -138,7 +164,7 @@ GameTest >> testCannotPlayAFinishedGame [
 		with: (Die of: 6 rolling: #(4 1))
 		on: self noEffectBoardOf12
 		playedBy: players.
-	aGame playUntilFinished.
+	self playUntilFinishedWithOutCardsA: aGame .
 	self
 		should: [ aGame playTurn ]
 		raise: InvalidAction
@@ -272,7 +298,7 @@ GameTest >> testManuMakes2LapsAndWin [
 		on: self noEffectBoardOf12
 		playedBy: players
 		withLaps: 2.
-	aGame playUntilFinished.
+	self playUntilFinishedWithOutCardsA: aGame. 
 	self assert: aGame hasFinished.
 	self assert: aGame winner laps equals: 2
 ]
@@ -354,7 +380,7 @@ GameTest >> testPlayAGameAndFranSecondAndManuFirst [
 		with: (Die of: 6 rolling: #(1 4))
 		on: self noEffectBoardOf12
 		playedBy: players.
-	aGame playUntilFinished.
+	self playUntilFinishedWithOutCardsA: aGame. 
 	self assert: (aGame atPodium: 2) name equals: 'Fran'.
 	self assert: (aGame atPodium: 1) name equals: 'Manu'
 ]
@@ -366,7 +392,7 @@ GameTest >> testPlayAGameAndFranWins [
 		with: (Die of: 6 rolling: #(4 1))
 		on: self noEffectBoardOf12
 		playedBy: players.
-	aGame playUntilFinished.
+	self playUntilFinishedWithOutCardsA: aGame. 
 	self assert: aGame winner name equals: 'Fran'
 ]
 
@@ -415,6 +441,19 @@ GameTest >> testSpeedUpMakesManuGoFirst [
 	aGame playTurn.
 	self assert: (aGame podiumOf: 'Manu') equals: 1.
 	self assert: (self positionOf: 'Manu' in: aGame) equals: 5
+]
+
+{ #category : #tests }
+GameTest >> testTitanShowdown [
+	| aGame |
+	aGame := Game
+		with: Die d6
+		on: (BoardGenerator ucaGameDefault buildOf: 20)
+		playedBy: players
+		withLaps: 3
+		shuffling: CardDeck withAllCards.
+	self playUntilFinished: aGame.
+	self assert: aGame hasFinished.
 ]
 
 { #category : #tests }
@@ -817,7 +856,7 @@ GameTest >> testWithMultipleDice [
 		with: die + (Die of: 8 rolling: #(7 3))
 		on: self noEffectBoardOf12
 		playedBy: players.
-	aGame playUntilFinished.
+	self playUntilFinishedWithOutCardsA: aGame. 
 	self assert: aGame hasFinished
 ]
 

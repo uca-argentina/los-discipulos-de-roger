@@ -182,11 +182,6 @@ Game >> playTurn [
 	self finishTurn.
 ]
 
-{ #category : #playing }
-Game >> playUntilFinished [
-	[ self hasFinished ] whileFalse: [ self playTurn ]
-]
-
 { #category : #accessing }
 Game >> player: aPlayerName [
 	| index |
