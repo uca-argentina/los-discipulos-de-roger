@@ -5,9 +5,9 @@ Class {
 }
 
 { #category : #tests }
-CardTest >> assertAverageIsBetween16and17Of: overloadCount [
+CardTest >> assertAverageIsBetween15and17Of: overloadCount [
 	self
-		assert: ((self averagePercentOf: overloadCount) between: 16 and: 17)
+		assert: ((self averagePercentOf: overloadCount) between: 15 and: 17)
 ]
 
 { #category : #tests }
@@ -38,12 +38,12 @@ CardTest >> testCardDeckHasUniformDistribution [
 		count: [ :card | card isMemberOf: Cancellation ].
 	redoCount := cardsDrawn count: [ :card | card isMemberOf: Redo ].
 	repeatCount := cardsDrawn count: [ :card | card isMemberOf: Repeat ].
-	self assertAverageIsBetween16and17Of: overloadCount.
-	self assertAverageIsBetween16and17Of: speedCount.
-	self assertAverageIsBetween16and17Of: accelerationCount.
-	self assertAverageIsBetween16and17Of: cancellationCount.
-	self assertAverageIsBetween16and17Of: redoCount.
-	self assertAverageIsBetween16and17Of: repeatCount
+	self assertAverageIsBetween15and17Of: overloadCount.
+	self assertAverageIsBetween15and17Of: speedCount.
+	self assertAverageIsBetween15and17Of: accelerationCount.
+	self assertAverageIsBetween15and17Of: cancellationCount.
+	self assertAverageIsBetween15and17Of: redoCount.
+	self assertAverageIsBetween15and17Of: repeatCount
 ]
 
 { #category : #tests }
