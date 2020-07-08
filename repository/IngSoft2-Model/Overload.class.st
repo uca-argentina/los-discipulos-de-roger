@@ -1,6 +1,6 @@
 Class {
 	#name : #Overload,
-	#superclass : #Card,
+	#superclass : #PermanentCard,
 	#category : #'IngSoft2-Model-Card'
 }
 
@@ -11,19 +11,8 @@ Overload class >> to: aTarget [
 	^ self new initializeWithTarget: aTarget
 ]
 
-{ #category : #comparing }
-Overload >> isPermanent [
-	^true.
-]
-
 { #category : #playing }
 Overload >> triggerEffectFor: aGame [ 
 	
 	target objective = aGame actualPlayer ifTrue: [ aGame moveActualPlayerBackwards: 2 ].
-]
-
-{ #category : #playing }
-Overload >> useEffectFor: aGame by: aPlayer [
-	target isValid.
-	aGame addPermanent: self by: aPlayer
 ]

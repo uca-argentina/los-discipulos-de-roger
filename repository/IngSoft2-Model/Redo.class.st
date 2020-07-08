@@ -1,18 +1,8 @@
 Class {
 	#name : #Redo,
-	#superclass : #Card,
+	#superclass : #InstantCard,
 	#category : #'IngSoft2-Model-Card'
 }
-
-{ #category : #comparing }
-Redo >> isPermanent [
-	^false.
-]
-
-{ #category : #playing }
-Redo >> triggerEffectFor: aGame [
-	
-]
 
 { #category : #playing }
 Redo >> useEffectFor: aGame by: aPlayer [

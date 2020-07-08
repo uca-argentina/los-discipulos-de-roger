@@ -1,6 +1,6 @@
 Class {
 	#name : #Speed,
-	#superclass : #Card,
+	#superclass : #PermanentCard,
 	#category : #'IngSoft2-Model-Card'
 }
 
@@ -11,19 +11,8 @@ Speed class >> to: aTarget [
 	^ self new initializeWithTarget: aTarget
 ]
 
-{ #category : #comparing }
-Speed >> isPermanent [
-	^true.
-]
-
 { #category : #playing }
 Speed >> triggerEffectFor: aGame [
 	target objective = aGame actualPlayer
 		ifTrue: [ aGame moveActualPlayerForward: 1 ]
-]
-
-{ #category : #playing }
-Speed >> useEffectFor: aGame by: aPlayer [
-	target isValid.
-	aGame addPermanent: self by: aPlayer
 ]

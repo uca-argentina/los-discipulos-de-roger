@@ -1,6 +1,6 @@
 Class {
 	#name : #Cancellation,
-	#superclass : #Card,
+	#superclass : #InstantCard,
 	#category : #'IngSoft2-Model-Card'
 }
 
@@ -9,16 +9,6 @@ Cancellation class >> to: aTarget [
 	(aTarget isMemberOf: TargetPlayer)
 		ifTrue: [ InstanceCreationFailed signal: 'Target must be a card' ].
 	^ self new initializeWithTarget: aTarget
-]
-
-{ #category : #comparing }
-Cancellation >> isPermanent [
-	^false.
-]
-
-{ #category : #playing }
-Cancellation >> triggerEffectFor: aGame [ 
-
 ]
 
 { #category : #playing }
