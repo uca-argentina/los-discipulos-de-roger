@@ -11,6 +11,11 @@ Cancellation class >> to: aTarget [
 	^ self new initializeWithTarget: aTarget
 ]
 
+{ #category : #comparing }
+Cancellation >> isPermanent [
+	^false.
+]
+
 { #category : #playing }
 Cancellation >> triggerEffectFor: aGame [ 
 
@@ -18,7 +23,7 @@ Cancellation >> triggerEffectFor: aGame [
 
 { #category : #playing }
 Cancellation >> useEffectFor: aGame by: aPlayer [
-	target isValid.
+	((target isValid) and: (aGame hasActivatedPermanents)) ifFalse: [InvalidAction signal: 'Invalid Card Usage'].
 	aGame removePermanentCard: target objective.
 	aGame addToDeck: self
 ]

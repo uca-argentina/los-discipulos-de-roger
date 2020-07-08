@@ -9,7 +9,3 @@ TargetPlayer >> initializePointingTo: aPlayerName [
 	 
 	objective := Player ofPlayerNamed: aPlayerName.
 ]
-
-{ #category : #checking }
-TargetPlayer >> isValid [
-]

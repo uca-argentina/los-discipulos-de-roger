@@ -4,6 +4,11 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
+{ #category : #comparing }
+Repeat >> isPermanent [
+	^false.
+]
+
 { #category : #playing }
 Repeat >> triggerEffectFor: aGame [
 ]

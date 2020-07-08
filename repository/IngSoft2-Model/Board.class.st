@@ -27,7 +27,7 @@ Board >> fields [
 { #category : #initialization }
 Board >> initializeWithFields: arrayOfFields [
 fields := arrayOfFields.
-lastEffect := NoEffect new.
+lastEffect := InvalidEffect new.
 
 ]
 

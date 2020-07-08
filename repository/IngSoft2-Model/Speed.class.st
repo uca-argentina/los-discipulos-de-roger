@@ -11,6 +11,11 @@ Speed class >> to: aTarget [
 	^ self new initializeWithTarget: aTarget
 ]
 
+{ #category : #comparing }
+Speed >> isPermanent [
+	^true.
+]
+
 { #category : #playing }
 Speed >> triggerEffectFor: aGame [
 	target objective = aGame actualPlayer

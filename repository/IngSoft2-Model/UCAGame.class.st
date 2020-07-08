@@ -92,6 +92,11 @@ UCAGame >> finishTurn [
 	self updateScoreboard
 ]
 
+{ #category : #'as yet unclassified' }
+UCAGame >> hasActivatedPermanents [
+	^cardHistory hasActivatedPermanents.
+]
+
 { #category : #results }
 UCAGame >> hasFinished [
 	^state hasFinished.

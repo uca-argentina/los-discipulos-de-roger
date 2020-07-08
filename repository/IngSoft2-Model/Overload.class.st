@@ -11,6 +11,11 @@ Overload class >> to: aTarget [
 	^ self new initializeWithTarget: aTarget
 ]
 
+{ #category : #comparing }
+Overload >> isPermanent [
+	^true.
+]
+
 { #category : #playing }
 Overload >> triggerEffectFor: aGame [ 
 	

@@ -4,6 +4,11 @@ Class {
 	#category : #'IngSoft2-Model-Card'
 }
 
+{ #category : #'as yet unclassified' }
+Acceleration >> isPermanent [
+	^true.
+]
+
 { #category : #playing }
 Acceleration >> triggerEffectFor: aGame [
 	aGame moveActualPlayerForward: 1

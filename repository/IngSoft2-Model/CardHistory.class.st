@@ -12,6 +12,12 @@ CardHistory >> add: aCard [
 	thrownCards add: aCard
 ]
 
+{ #category : #'as yet unclassified' }
+CardHistory >> hasActivatedPermanents [
+	thrownCards detect: [ :card | card isPermanent ] ifFound: [ ^true ].
+	^false.
+]
+
 { #category : #initialization }
 CardHistory >> initialize [
 	thrownCards := OrderedCollection new

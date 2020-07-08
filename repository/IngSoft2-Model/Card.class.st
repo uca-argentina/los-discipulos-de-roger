@@ -27,6 +27,11 @@ Card >> isIdenticalTo: aCard [
 	^ aCard = self & aCard target = target
 ]
 
+{ #category : #comparing }
+Card >> isPermanent [
+	self subclassResponsibility.
+]
+
 { #category : #accessing }
 Card >> target [
 	^ target

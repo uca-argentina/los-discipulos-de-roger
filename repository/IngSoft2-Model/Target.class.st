@@ -26,7 +26,7 @@ Target >> initializePointingTo: anObjective [
 
 { #category : #checking }
 Target >> isValid [
-	self subclassResponsibility
+	^true
 ]
 
 { #category : #accessing }

@@ -73,7 +73,12 @@ UCAGameTest >> overloadTestBoard [
 
 { #category : #tests }
 UCAGameTest >> playUntilFinished: aGame [
-	[ aGame hasFinished ] whileFalse: [ self some: (aGame actualPlayer name) playCardFor: aGame. aGame playTurn ].
+	| iterator |
+	iterator := 0.
+	[ aGame hasFinished and: iterator < 1000 ]
+		whileFalse: [ self some: aGame actualPlayer name playCardFor: aGame.
+			aGame playTurn.
+			iterator := iterator + 1 ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -148,14 +153,13 @@ UCAGameTest >> testActivateCancellationOfNonPlayedCard [
 					{aCancellation.
 					anAcceleration}
 				of: #(1 2)).
-	aGame
-		player: 'Manu'
-		playCard: (Cancellation to: (TargetCard pointing: anAcceleration)).
-	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	aGame player: 'Fran' playCard: anAcceleration.
+	aGame player: 'Manu' playCard: (Cancellation to: (TargetCard pointing: anOverload)).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
 	self assert: (self cardsOf: 'Manu' in: aGame) equals: 1.
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
 	aGame playTurn.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
 	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
 ]
 
@@ -201,14 +205,12 @@ UCAGameTest >> testCannotLayCancellationToEmptyCardDeck [
 					{aCancellation .
 					anAcceleration}
 				of: #(1 2)).
-	aGame player: 'Fran' playCard: anAcceleration.
-	aGame player: 'Manu' playCard: (Cancellation to: (TargetCard pointing: anAcceleration) ).
-	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
-	self assert: (self cardsOf: 'Manu' in: aGame) equals: 1.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
-	aGame playTurn.
-	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
+	self should: [aGame player: 'Manu' playCard: (Cancellation to: (TargetCard pointing: anAcceleration) )]
+			raise: InvalidAction 
+			withMessageText: 'Invalid Card Usage'.
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 2.
+	
 ]
 
 { #category : #tests }
@@ -500,7 +502,7 @@ UCAGameTest >> testSpeedUpMakesManuGoFirst [
 { #category : #tests }
 UCAGameTest >> testTitanShowdown [
 	| aGame |
-	100 timesRepeat: [  
+
 	aGame := UCAGame
 		with: Die d6
 		on: (BoardGenerator ucaGameDefault buildOf: 20)
@@ -508,7 +510,7 @@ UCAGameTest >> testTitanShowdown [
 		withLaps: 3
 		shuffling: CardDeck withAllCards.
 	self playUntilFinished: aGame.
-	self assert: aGame hasFinished.]
+	self assert: aGame hasFinished.
 ]
 
 { #category : #tests }
@@ -582,7 +584,7 @@ UCAGameTest >> testTriggerAaMoonWalkAndAnotherPlayerStaysAtStart [
 ]
 
 { #category : #tests }
-UCAGameTest >> testTriggerAccelerationEffectMultipleTimes [
+UCAGameTest >> testTriggerAccelerationEffectOnceAndMultipleTimes [
 	| aGame |
 	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
@@ -936,7 +938,57 @@ UCAGameTest >> testTriggerRepeat [
 ]
 
 { #category : #tests }
-UCAGameTest >> testTriggerSpeedEffect [
+UCAGameTest >> testTriggerRepeatBeforeAnyTurnIsPlayed [
+	| aGame  |
+	
+	aGame := UCAGame
+		with: die
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {aRepeat}).
+	self should: [aGame player: 'Fran' playCard: Repeat new]
+	raise: InvalidAction
+	withMessageText: 'Cannot use Repeat before dice have been thrown'.
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+]
+
+{ #category : #tests }
+UCAGameTest >> testTriggerSpeedAndAcceleration [
+	| aGame |
+	aGame := UCAGame
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {aSpeed. anAcceleration} of: #(1 2)).
+	aGame player: 'Fran' playCard: (Speed to: (TargetPlayer pointing: 'Fran')).
+	aGame player: 'Fran' playCard: (anAcceleration ).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 6.
+]
+
+{ #category : #tests }
+UCAGameTest >> testTriggerSpeedAndOverload [
+	| aGame |
+	aGame := UCAGame
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {aSpeed. anOverload} of: #(1 2)).
+	aGame player: 'Fran' playCard: (Speed to: (TargetPlayer pointing: 'Fran')).
+	aGame player: 'Fran' playCard: (Overload to: (TargetPlayer pointing: 'Fran')).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 3.
+]
+
+{ #category : #tests }
+UCAGameTest >> testTriggerSpeedEffectAndOnlyAffectsTheTarget [
 	| aGame |
 	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
@@ -949,7 +1001,10 @@ UCAGameTest >> testTriggerSpeedEffect [
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
 	aGame playTurn.
 	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
-	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 5.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 4.
 ]
 
 { #category : #tests }
