@@ -11,7 +11,7 @@ Class {
 		'options',
 		'currentIndex'
 	],
-	#category : #'IngSoft2-Model-Game'
+	#category : #'IngSoft2-Model-UCAGame'
 }
 
 { #category : #'instance creation' }

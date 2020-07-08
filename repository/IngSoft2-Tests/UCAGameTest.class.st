@@ -1,5 +1,5 @@
 Class {
-	#name : #GameTest,
+	#name : #UCAGameTest,
 	#superclass : #TestCase,
 	#instVars : [
 		'players',
@@ -9,6 +9,7 @@ Class {
 		'anAtomicBomb',
 		'aSpeedUp',
 		'anAcceleration',
+		'aMoonwalk',
 		'aCancellation',
 		'anOverload',
 		'aSpeed',
@@ -18,16 +19,16 @@ Class {
 		'targetManu',
 		'nonTarget'
 	],
-	#category : #'IngSoft2-Tests-Game-Tests'
+	#category : #'IngSoft2-Tests-UCAGame-Tests'
 }
 
 { #category : #checking }
-GameTest >> cardsOf: aPlayer in: aGame [
+UCAGameTest >> cardsOf: aPlayer in: aGame [
 	^ (self whereIs: aPlayer in: aGame) cardCount 
 ]
 
 { #category : #tests }
-GameTest >> finalBoard [
+UCAGameTest >> finalBoard [
 	| anArrayOfFields aMoonwalk |
 	aMoonwalk:= Moonwalk createField:5.
 	anArrayOfFields := OrderedCollection new.
@@ -43,34 +44,50 @@ GameTest >> finalBoard [
 ]
 
 { #category : #checking }
-GameTest >> lapsOf: aPlayer in: aGame [
+UCAGameTest >> lapsOf: aPlayer in: aGame [
 	^ (self whereIs: aPlayer in: aGame) laps
 ]
 
 { #category : #tests }
-GameTest >> noEffectBoardOf12 [
+UCAGameTest >> noEffectBoardOf12 [
 	| boardGenerator |
 	boardGenerator := BoardGenerator with: 10 of: NoEffect new.
 	^ boardGenerator buildOf: 12
 ]
 
 { #category : #tests }
-GameTest >> playUntilFinished: aGame [
+UCAGameTest >> overloadTestBoard [
+	| anArrayOfFields |
+	anArrayOfFields := OrderedCollection new.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: PickCard new.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: aWormhole.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: aSpeedUp.
+	2 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	anArrayOfFields add: anAtomicBomb.
+	2 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	^ anArrayOfFields
+]
+
+{ #category : #tests }
+UCAGameTest >> playUntilFinished: aGame [
 	[ aGame hasFinished ] whileFalse: [ self some: (aGame actualPlayer name) playCardFor: aGame. aGame playTurn ].
 ]
 
 { #category : #'as yet unclassified' }
-GameTest >> playUntilFinishedWithOutCardsA: aGame [
+UCAGameTest >> playUntilFinishedWithOutCardsA: aGame [
 	[ aGame hasFinished ] whileFalse: [ aGame playTurn ]
 ]
 
 { #category : #tests }
-GameTest >> positionOf: aPlayer in: aGame [
+UCAGameTest >> positionOf: aPlayer in: aGame [
 	^ (self whereIs: aPlayer in: aGame) position
 ]
 
 { #category : #running }
-GameTest >> setUp [
+UCAGameTest >> setUp [
 	"Hooks that subclasses may override to define the fixture of test."
 	super setUp.
 	players := OrderedCollection withAll: {'Fran' . 'Manu'}.
@@ -91,9 +108,8 @@ GameTest >> setUp [
 ]
 
 { #category : #'as yet unclassified' }
-GameTest >> some: player playCardFor: aGame [ 
+UCAGameTest >> some: player playCardFor: aGame [ 
 		[ 
-	
 	aGame player: player playCard: (Overload to: targetManu).
 	aGame player: player playCard: (Speed to: targetFran).
 	aGame player: player playCard: (Acceleration to: nonTarget).
@@ -105,9 +121,23 @@ GameTest >> some: player playCardFor: aGame [
 ]
 
 { #category : #tests }
-GameTest >> testActivateCancellationOfNonPlayedCard [
+UCAGameTest >> speedTestBoard [
+	| anArrayOfFields |
+	anArrayOfFields := OrderedCollection new.
+	2 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	anArrayOfFields add: PickCard new.
+	anArrayOfFields add: aNoEffect.
+	anArrayOfFields add: aWormhole.
+	anArrayOfFields add: aSpeedUp.
+	5 timesRepeat: [ anArrayOfFields add: aNoEffect ].
+	anArrayOfFields add: anAtomicBomb.
+	^ anArrayOfFields
+]
+
+{ #category : #tests }
+UCAGameTest >> testActivateCancellationOfNonPlayedCard [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -130,10 +160,10 @@ GameTest >> testActivateCancellationOfNonPlayedCard [
 ]
 
 { #category : #tests }
-GameTest >> testCannotAskForPodiumPositionOfAPlayerThatIsNotInTheGame [
+UCAGameTest >> testCannotAskForPodiumPositionOfAPlayerThatIsNotInTheGame [
 	| aGame aThirdPlayer |
 	aThirdPlayer := 'Julivrone'.
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(6 5 1))
 		on: self noEffectBoardOf12
 		playedBy: players.
@@ -144,9 +174,9 @@ GameTest >> testCannotAskForPodiumPositionOfAPlayerThatIsNotInTheGame [
 ]
 
 { #category : #tests }
-GameTest >> testCannotAskForWinnerOfAnUnfinishedGame [
+UCAGameTest >> testCannotAskForWinnerOfAnUnfinishedGame [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4 1))
 		on: self noEffectBoardOf12
 		playedBy: players.
@@ -158,9 +188,33 @@ GameTest >> testCannotAskForWinnerOfAnUnfinishedGame [
 ]
 
 { #category : #tests }
-GameTest >> testCannotPlayAFinishedGame [
+UCAGameTest >> testCannotLayCancellationToEmptyCardDeck [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{aCancellation .
+					anAcceleration}
+				of: #(1 2)).
+	aGame player: 'Fran' playCard: anAcceleration.
+	aGame player: 'Manu' playCard: (Cancellation to: (TargetCard pointing: anAcceleration) ).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 1.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 4.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+UCAGameTest >> testCannotPlayAFinishedGame [
+	| aGame |
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4 1))
 		on: self noEffectBoardOf12
 		playedBy: players.
@@ -172,9 +226,9 @@ GameTest >> testCannotPlayAFinishedGame [
 ]
 
 { #category : #tests }
-GameTest >> testDueloDeTitanes [
+UCAGameTest >> testDueloDeTitanes [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4 6 1 1))
 		on: (Board withFields: self finalBoard)
 		playedBy: players
@@ -253,10 +307,10 @@ GameTest >> testDueloDeTitanes [
 ]
 
 { #category : #tests }
-GameTest >> testGetTwoCardsAtGameStart [
+UCAGameTest >> testGetTwoCardsAtGameStart [
 	| aGame aPlayer |
 	aPlayer := 'Fran'.
-	aGame := Game
+	aGame := UCAGame
 		with: die
 		on: self noEffectBoardOf12
 		playedBy: {aPlayer}.
@@ -264,9 +318,9 @@ GameTest >> testGetTwoCardsAtGameStart [
 ]
 
 { #category : #tests }
-GameTest >> testInstanceCreationAndAccessing [
+UCAGameTest >> testInstanceCreationAndAccessing [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: die
 		on: (BoardGenerator ucaGameDefault buildOf: 10)
 		playedBy: players
@@ -277,9 +331,9 @@ GameTest >> testInstanceCreationAndAccessing [
 ]
 
 { #category : #tests }
-GameTest >> testManuCantPlayPermanentCardBecauseItsNotHisTurn [
+UCAGameTest >> testManuCantPlayPermanentCardBecauseItsNotHisTurn [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: die
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -291,9 +345,9 @@ GameTest >> testManuCantPlayPermanentCardBecauseItsNotHisTurn [
 ]
 
 { #category : #tests }
-GameTest >> testManuMakes2LapsAndWin [
+UCAGameTest >> testManuMakes2LapsAndWin [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(1 4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -304,13 +358,13 @@ GameTest >> testManuMakes2LapsAndWin [
 ]
 
 { #category : #tests }
-GameTest >> testManuTriggersAtomicBombAndLapCountDoesNotDiminishForFran [
+UCAGameTest >> testManuTriggersAtomicBombAndLapCountDoesNotDiminishForFran [
 	| aGame anArrayOfFields |
 	anArrayOfFields := OrderedCollection new.
 	anArrayOfFields add: aNoEffect.
 	anArrayOfFields add: anAtomicBomb.
 	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 10 rolling: #(10 1))
 		on: (Board withFields: anArrayOfFields)
 		playedBy: players
@@ -325,14 +379,14 @@ GameTest >> testManuTriggersAtomicBombAndLapCountDoesNotDiminishForFran [
 ]
 
 { #category : #tests }
-GameTest >> testManuTriggersMoonwalkAndBecomesFirstInPodium [
+UCAGameTest >> testManuTriggersMoonwalkAndBecomesFirstInPodium [
 	| aGame anArrayOfFields aMoonwalk |
 	aMoonwalk := Moonwalk createField: 10.
 	anArrayOfFields := OrderedCollection new.
 	anArrayOfFields add: aNoEffect.
 	anArrayOfFields add: aMoonwalk.
 	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 10 rolling: #(10 1))
 		on: (Board withFields: anArrayOfFields)
 		playedBy: players
@@ -350,14 +404,14 @@ GameTest >> testManuTriggersMoonwalkAndBecomesFirstInPodium [
 ]
 
 { #category : #tests }
-GameTest >> testManuTriggersMoonwalkAndLapCountDiminishesForFran [
+UCAGameTest >> testManuTriggersMoonwalkAndLapCountDiminishesForFran [
 	| aGame anArrayOfFields aMoonwalk |
 	aMoonwalk := Moonwalk createField: 5.
 	anArrayOfFields := OrderedCollection new.
 	anArrayOfFields add: aNoEffect.
 	anArrayOfFields add: aMoonwalk.
 	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 10 rolling: #(10 1))
 		on: (Board withFields: anArrayOfFields)
 		playedBy: players
@@ -374,9 +428,9 @@ GameTest >> testManuTriggersMoonwalkAndLapCountDiminishesForFran [
 ]
 
 { #category : #tests }
-GameTest >> testPlayAGameAndFranSecondAndManuFirst [
+UCAGameTest >> testPlayAGameAndFranSecondAndManuFirst [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(1 4))
 		on: self noEffectBoardOf12
 		playedBy: players.
@@ -386,9 +440,9 @@ GameTest >> testPlayAGameAndFranSecondAndManuFirst [
 ]
 
 { #category : #tests }
-GameTest >> testPlayAGameAndFranWins [
+UCAGameTest >> testPlayAGameAndFranWins [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4 1))
 		on: self noEffectBoardOf12
 		playedBy: players.
@@ -397,11 +451,11 @@ GameTest >> testPlayAGameAndFranWins [
 ]
 
 { #category : #tests }
-GameTest >> testPlayAGameAndGetPodiumPositionOfEachPlayer [
+UCAGameTest >> testPlayAGameAndGetPodiumPositionOfEachPlayer [
 	| aGame aThirdPlayer |
 	aThirdPlayer := 'Julivrone'.
 	players add: aThirdPlayer.
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(5 6 1))
 		on: self noEffectBoardOf12
 		playedBy: players.
@@ -412,10 +466,10 @@ GameTest >> testPlayAGameAndGetPodiumPositionOfEachPlayer [
 ]
 
 { #category : #tests }
-GameTest >> testPlayGame [
+UCAGameTest >> testPlayGame [
 	| aGame aPlayer |
 	aPlayer := 'Fran'.
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: {aPlayer}.
@@ -424,13 +478,13 @@ GameTest >> testPlayGame [
 ]
 
 { #category : #tests }
-GameTest >> testSpeedUpMakesManuGoFirst [
+UCAGameTest >> testSpeedUpMakesManuGoFirst [
 	| aGame anArrayOfFields |
 	anArrayOfFields := OrderedCollection new.
 	anArrayOfFields add: aNoEffect.
 	anArrayOfFields add: aSpeedUp.
 	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 10 rolling: #(3 1))
 		on: (Board withFields: anArrayOfFields)
 		playedBy: players
@@ -444,23 +498,24 @@ GameTest >> testSpeedUpMakesManuGoFirst [
 ]
 
 { #category : #tests }
-GameTest >> testTitanShowdown [
+UCAGameTest >> testTitanShowdown [
 	| aGame |
-	aGame := Game
+	100 timesRepeat: [  
+	aGame := UCAGame
 		with: Die d6
 		on: (BoardGenerator ucaGameDefault buildOf: 20)
 		playedBy: players
 		withLaps: 3
 		shuffling: CardDeck withAllCards.
 	self playUntilFinished: aGame.
-	self assert: aGame hasFinished.
+	self assert: aGame hasFinished.]
 ]
 
 { #category : #tests }
-GameTest >> testTriggerAPickCard [
+UCAGameTest >> testTriggerAPickCard [
 	| actualPlayer aGame |
 	actualPlayer := 'Manu'.
-	aGame := Game
+	aGame := UCAGame
 		with: die
 		on: ((BoardGenerator with: 10 of: PickCard new) buildOf: 10)
 		playedBy: {actualPlayer}
@@ -471,10 +526,10 @@ GameTest >> testTriggerAPickCard [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerASpeedUp [
+UCAGameTest >> testTriggerASpeedUp [
 	| aGame actualPlayer |
 	actualPlayer := 'Manu'.
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(6))
 		on: ((BoardGenerator with: 10 of: SpeedUp new) buildOf: 10)
 		playedBy: {actualPlayer}
@@ -487,10 +542,10 @@ GameTest >> testTriggerASpeedUp [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerAWormHole [
+UCAGameTest >> testTriggerAWormHole [
 	| actualPlayer aGame |
 	actualPlayer := 'Manu'.
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(6))
 		on: ((BoardGenerator with: 10 of: Wormhole new) buildOf: 10)
 		playedBy: {actualPlayer}
@@ -501,10 +556,10 @@ GameTest >> testTriggerAWormHole [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerAaMoonWalkAndAPlayerMoves [
+UCAGameTest >> testTriggerAaMoonWalkAndAPlayerMoves [
 	| aGame boardGen |
 	boardGen := BoardGenerator with: 1 of: (Moonwalk createField: 5).
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(6))
 		on: (boardGen buildOf: 10)
 		playedBy: players
@@ -514,9 +569,9 @@ GameTest >> testTriggerAaMoonWalkAndAPlayerMoves [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerAaMoonWalkAndAnotherPlayerStaysAtStart [
+UCAGameTest >> testTriggerAaMoonWalkAndAnotherPlayerStaysAtStart [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(6))
 		on: ((BoardGenerator with: 10 of: Moonwalk createField) buildOf: 10)
 		playedBy: players
@@ -527,9 +582,9 @@ GameTest >> testTriggerAaMoonWalkAndAnotherPlayerStaysAtStart [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerAccelerationEffect [
+UCAGameTest >> testTriggerAccelerationEffectMultipleTimes [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -549,9 +604,9 @@ GameTest >> testTriggerAccelerationEffect [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerAnAtomicBombAtStartDoesNothing [
+UCAGameTest >> testTriggerAnAtomicBombAtStartDoesNothing [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(6))
 		on: ((BoardGenerator with: 10 of: AtomicBomb new) buildOf: 10)
 		playedBy: players
@@ -563,9 +618,9 @@ GameTest >> testTriggerAnAtomicBombAtStartDoesNothing [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerCancellationEffect [
+UCAGameTest >> testTriggerCancellationEffect [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -587,9 +642,9 @@ GameTest >> testTriggerCancellationEffect [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerCancellationEffectToAnSpecificSpeed [
+UCAGameTest >> testTriggerCancellationEffectToAnSpecificSpeed [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -614,9 +669,9 @@ GameTest >> testTriggerCancellationEffectToAnSpecificSpeed [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerCancellationEffectToAnSpecificSpeedButManuHavingTwoOfThem [
+UCAGameTest >> testTriggerCancellationEffectToAnSpecificSpeedButManuHavingTwoOfThem [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -644,9 +699,9 @@ GameTest >> testTriggerCancellationEffectToAnSpecificSpeedButManuHavingTwoOfThem
 ]
 
 { #category : #tests }
-GameTest >> testTriggerOverloadEffect [
+UCAGameTest >> testTriggerOverloadEffect [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -663,9 +718,56 @@ GameTest >> testTriggerOverloadEffect [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerRedoAcceleration [
+UCAGameTest >> testTriggerOverloadWithBoardEffects [
+	| aGame actualPlayer|
+	actualPlayer := 'Fran'.
+	aGame := UCAGame
+		with: (Die of: 7 rolling: #(3 4 7 1))
+		on: (Board withFields: self overloadTestBoard)
+		playedBy: {actualPlayer}
+		withLaps: 1
+		shuffling: (CardDeck with: {anOverload} of: #(1 2)).
+	aGame player: 'Fran' playCard: (Overload to: targetFran).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn.
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 9.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0
+]
+
+{ #category : #tests }
+UCAGameTest >> testTriggerOverloadWithMoonwalk [
+	| aGame anArrayOfFields |
+	anArrayOfFields := OrderedCollection new.
+	3 timesRepeat: [anArrayOfFields add: aNoEffect].
+	anArrayOfFields add: (Moonwalk createField:2).
+	anArrayOfFields add: aNoEffect.
+	
+	aGame := UCAGame
+		with: (Die of: 6 rolling: #(2 5))
+		on: (Board withFields: anArrayOfFields)
+		playedBy: players
+		withLaps: 2
+		shuffling: (CardDeck with: {anOverload} of: #(1 2)).
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 0.
+	aGame player: 'Fran' playCard: (Overload to: targetManu).
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 2.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+
+]
+
+{ #category : #tests }
+UCAGameTest >> testTriggerRedoAcceleration [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -687,9 +789,9 @@ GameTest >> testTriggerRedoAcceleration [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerRedoCancellation [
+UCAGameTest >> testTriggerRedoCancellation [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -720,7 +822,32 @@ GameTest >> testTriggerRedoCancellation [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerRedoRepeat [
+UCAGameTest >> testTriggerRedoRedo [
+	| aGame |
+	aGame := UCAGame
+		with: (Die of: 6 rolling: #(1))
+		on: self noEffectBoardOf12 
+		playedBy: players
+		withLaps: 1
+		shuffling:
+			(CardDeck
+				with:
+					{aSpeed.
+					aRedo}
+				of: #(1 2 2 2)).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	self assert: (self cardsOf: 'Manu' in: aGame) equals: 2.
+	aGame player: 'Fran' playCard: (Speed to: targetFran ).
+	aGame player: 'Fran' playCard: (Redo to: targetFran ).
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 3.
+	aGame player: 'Manu' playCard: (Redo to: targetManu ).
+	aGame playTurn.
+	self assert: (self positionOf: 'Manu' in: aGame) equals: 2.
+]
+
+{ #category : #tests }
+UCAGameTest >> testTriggerRedoRepeat [
 	| aGame anArrayOfFields |
 	anArrayOfFields := OrderedCollection new.
 	anArrayOfFields add: aNoEffect.
@@ -728,7 +855,7 @@ GameTest >> testTriggerRedoRepeat [
 	2 timesRepeat: [ anArrayOfFields add: aNoEffect ].
 	anArrayOfFields add: aSpeedUp.
 	10 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: (Board withFields: anArrayOfFields)
 		playedBy: players
@@ -752,9 +879,9 @@ GameTest >> testTriggerRedoRepeat [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerRedoSpeed [
+UCAGameTest >> testTriggerRedoSpeed [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -780,7 +907,7 @@ GameTest >> testTriggerRedoSpeed [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerRepeat [
+UCAGameTest >> testTriggerRepeat [
 	| aGame anArrayOfFields |
 	anArrayOfFields := OrderedCollection new.
 	anArrayOfFields add: aNoEffect.
@@ -788,7 +915,7 @@ GameTest >> testTriggerRepeat [
 	2 timesRepeat: [ anArrayOfFields add: aNoEffect ].
 	anArrayOfFields add: aSpeedUp.
 	10 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
+	aGame := UCAGame
 		with: die
 		on: (Board withFields: anArrayOfFields)
 		playedBy: players
@@ -809,9 +936,9 @@ GameTest >> testTriggerRepeat [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerSpeedEffect [
+UCAGameTest >> testTriggerSpeedEffect [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(4))
 		on: self noEffectBoardOf12
 		playedBy: players
@@ -826,14 +953,54 @@ GameTest >> testTriggerSpeedEffect [
 ]
 
 { #category : #tests }
-GameTest >> testTriggerWormholeAndDismishTheLaps [
+UCAGameTest >> testTriggerSpeedEffectTwice [
+	| aGame |
+	aGame := UCAGame
+		with: (Die of: 6 rolling: #(4))
+		on: self noEffectBoardOf12
+		playedBy: players
+		withLaps: 1
+		shuffling: (CardDeck with: {aSpeed}).
+	aGame player: 'Fran' playCard: (Speed to: (TargetPlayer pointing: 'Fran')).
+	aGame player: 'Fran' playCard: (Speed to: (TargetPlayer pointing: 'Fran')).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 6.
+]
+
+{ #category : #tests }
+UCAGameTest >> testTriggerSpeedWithBoardEffects [
+	| aGame actualPlayer|
+	actualPlayer := 'Fran'.
+	aGame := UCAGame
+		with: (Die of: 7 rolling: #(1 1 4 1))
+		on: (Board withFields: self speedTestBoard)
+		playedBy: {actualPlayer}
+		withLaps: 1
+		shuffling: (CardDeck with: {aSpeed} of: #(1 2)).
+	aGame player: 'Fran' playCard: (Speed to: targetFran).
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 1.
+	aGame playTurn.
+	self assert: (self cardsOf: 'Fran' in: aGame) equals: 2.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 2.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 9.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+]
+
+{ #category : #tests }
+UCAGameTest >> testTriggerWormholeMakesPlayerGoBackALap [
 	| aGame actualPlayer anArrayOfFields |
 	actualPlayer := 'Manu'.
 	anArrayOfFields := OrderedCollection new.
 	anArrayOfFields add: aNoEffect.
 	anArrayOfFields add: aWormhole.
 	4 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(1 6))
 		on: (Board withFields: anArrayOfFields)
 		playedBy: {actualPlayer}
@@ -850,9 +1017,44 @@ GameTest >> testTriggerWormholeAndDismishTheLaps [
 ]
 
 { #category : #tests }
-GameTest >> testWithMultipleDice [
+UCAGameTest >> testTriggeringOverloadAtStart [
+	| aGame actualPlayer|
+	actualPlayer := 'Fran'.
+	aGame := UCAGame
+		with: (Die of: 6 rolling: #(1))
+		on: self noEffectBoardOf12
+		playedBy: { actualPlayer  }
+		withLaps: 1
+		shuffling: (CardDeck with: {anOverload} of: #(1 2)).
+	aGame player: 'Fran' playCard: (Overload to: targetFran).
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+]
+
+{ #category : #tests }
+UCAGameTest >> testTriggeringOverloadMakesPlayerGoBackALap [
+	| aGame actualPlayer|
+	actualPlayer := 'Fran'.
+	aGame := UCAGame
+		with: (Die of: 6 rolling: #(6 6 1))
+		on: self noEffectBoardOf12
+		playedBy: { actualPlayer }
+		withLaps: 2
+		shuffling: (CardDeck with: {anOverload} of: #(1 2)).
+	2 timesRepeat: [ aGame playTurn ].
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 0.
+	self assert: (self lapsOf: 'Fran' in: aGame) equals: 1.
+	aGame player: 'Fran' playCard: (Overload to: targetFran).
+	aGame playTurn.
+	self assert: (self positionOf: 'Fran' in: aGame) equals: 11.
+	self assert: (self lapsOf: 'Fran' in: aGame) equals: 0.
+]
+
+{ #category : #tests }
+UCAGameTest >> testWithMultipleDice [
 	| aGame |
-	aGame := Game
+	aGame := UCAGame
 		with: die + (Die of: 8 rolling: #(7 3))
 		on: self noEffectBoardOf12
 		playedBy: players.
@@ -861,13 +1063,13 @@ GameTest >> testWithMultipleDice [
 ]
 
 { #category : #tests }
-GameTest >> testWormholeMakesManuNotFinishAGame [
+UCAGameTest >> testWormholeMakesManuNotFinishAGame [
 	| aGame actualPlayer anArrayOfFields |
 	actualPlayer := 'Manu'.
 	anArrayOfFields := OrderedCollection new.
 	anArrayOfFields add: aWormhole.
 	5 timesRepeat: [ anArrayOfFields add: aNoEffect ].
-	aGame := Game
+	aGame := UCAGame
 		with: (Die of: 6 rolling: #(6))
 		on: (Board withFields: anArrayOfFields)
 		playedBy: {actualPlayer}
@@ -880,6 +1082,6 @@ GameTest >> testWormholeMakesManuNotFinishAGame [
 ]
 
 { #category : #checking }
-GameTest >> whereIs: aPlayer in: aGame [
+UCAGameTest >> whereIs: aPlayer in: aGame [
 	^ aGame atPodium: (aGame podiumOf: aPlayer)
 ]

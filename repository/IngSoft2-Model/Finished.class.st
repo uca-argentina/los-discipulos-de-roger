@@ -1,7 +1,7 @@
 Class {
 	#name : #Finished,
 	#superclass : #Object,
-	#category : #'IngSoft2-Model-Game'
+	#category : #'IngSoft2-Model-UCAGame'
 }
 
 { #category : #checking }

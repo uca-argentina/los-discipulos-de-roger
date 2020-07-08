@@ -1,5 +1,5 @@
 Class {
 	#name : #InvalidAction,
 	#superclass : #Error,
-	#category : #'IngSoft2-Model-Game'
+	#category : #'IngSoft2-Model-UCAGame'
 }

@@ -1,5 +1,5 @@
 Class {
-	#name : #Game,
+	#name : #UCAGame,
 	#superclass : #Object,
 	#instVars : [
 		'dice',
@@ -11,26 +11,26 @@ Class {
 		'deck',
 		'cardHistory'
 	],
-	#category : #'IngSoft2-Model-Game'
+	#category : #'IngSoft2-Model-UCAGame'
 }
 
 { #category : #'as yet unclassified' }
-Game class >> playedBy: aCollection [ 
+UCAGame class >> playedBy: aCollection [ 
 	^self with: Die d6 on: Board ucaGameDefault playedBy: aCollection  withLaps: 1 shuffling: CardDeck withAllCards.
 ]
 
 { #category : #'as yet unclassified' }
-Game class >> with: aDice on: aBoard playedBy: aCollection [ 
+UCAGame class >> with: aDice on: aBoard playedBy: aCollection [ 
 	^self with: aDice on: aBoard playedBy: aCollection  withLaps: 1 shuffling: CardDeck withAllCards.
 ]
 
 { #category : #instanceCreation }
-Game class >> with: dice on: aBoard playedBy: players withLaps: laps [
+UCAGame class >> with: dice on: aBoard playedBy: players withLaps: laps [
 	^self with: dice on: aBoard playedBy: players withLaps: laps shuffling: CardDeck withAllCards.
 ]
 
 { #category : #instanceCreation }
-Game class >> with: dice on: aBoard playedBy: players withLaps: laps shuffling: aCardDeck [.
+UCAGame class >> with: dice on: aBoard playedBy: players withLaps: laps shuffling: aCardDeck [.
 	^ self new
 		initializeDice: dice
 		withBoard: aBoard
@@ -40,35 +40,35 @@ Game class >> with: dice on: aBoard playedBy: players withLaps: laps shuffling: 
 ]
 
 { #category : #playing }
-Game >> activatePermanentEffects [
+UCAGame >> activatePermanentEffects [
 	cardHistory triggerEffectsFor: self
 ]
 
 { #category : #accessing }
-Game >> actualPlayer [
+UCAGame >> actualPlayer [
 	^ playerSequence current
 ]
 
 { #category : #playing }
-Game >> addPermanent: aCard by: aPlayer [ 
+UCAGame >> addPermanent: aCard by: aPlayer [ 
 	(aPlayer = self actualPlayer) ifFalse: [ InvalidAction signal: 'It is not the card bearers turn' ].
 	self addToDeck: aCard.
 ]
 
 { #category : #playing }
-Game >> addToDeck: aCard [
+UCAGame >> addToDeck: aCard [
 	cardHistory   add: aCard
 ]
 
 { #category : #results }
-Game >> atPodium: aPosition [
+UCAGame >> atPodium: aPosition [
 	"This could be used to get when is a players turn or to get the positions at the end of the game"
 
 	^ scoreboard at: aPosition
 ]
 
 { #category : #playing }
-Game >> changeLapsOf: aPlayer [
+UCAGame >> changeLapsOf: aPlayer [
 	(self outOfBounds: aPlayer)
 		ifTrue: [ aPlayer
 				addLap: aPlayer position // self length
@@ -76,29 +76,29 @@ Game >> changeLapsOf: aPlayer [
 ]
 
 { #category : #accessing }
-Game >> dice [
+UCAGame >> dice [
 	^dice
 ]
 
 { #category : #StateChanging }
-Game >> finishStartedGame [
+UCAGame >> finishStartedGame [
 	state := Finished new.
 ]
 
 { #category : #playing }
-Game >> finishTurn [
+UCAGame >> finishTurn [
 	state finish: self.
 	playerSequence next.
 	self updateScoreboard
 ]
 
 { #category : #results }
-Game >> hasFinished [
+UCAGame >> hasFinished [
 	^state hasFinished.
 ]
 
 { #category : #initialization }
-Game >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: ammountLaps shuffling: aCardDeck [
+UCAGame >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: ammountLaps shuffling: aCardDeck [
 	| rows |
 	deck := aCardDeck.
 	rows := self makePlayerRows: players. 
@@ -113,22 +113,22 @@ Game >> initializeDice: aDice withBoard: aBoard andPlayers: players andLaps: amm
 ]
 
 { #category : #accessing }
-Game >> laps [
+UCAGame >> laps [
 	^ laps
 ]
 
 { #category : #accessing }
-Game >> lastCard [
+UCAGame >> lastCard [
 	^cardHistory last
 ]
 
 { #category : #accessing }
-Game >> length [
+UCAGame >> length [
 	^board length 
 ]
 
 { #category : #intialization }
-Game >> makePlayerRows: aCollection [
+UCAGame >> makePlayerRows: aCollection [
 	| rowList aPlayer |
 	rowList := OrderedCollection new.
 	aCollection
@@ -139,7 +139,7 @@ Game >> makePlayerRows: aCollection [
 ]
 
 { #category : #playing }
-Game >> moonWalk: anInteger [
+UCAGame >> moonWalk: anInteger [
 	scoreboard
 		do: [ :player | 
 			player != self actualPlayer
@@ -148,33 +148,33 @@ Game >> moonWalk: anInteger [
 ]
 
 { #category : #playing }
-Game >> move: anInteger toThis: player [
+UCAGame >> move: anInteger toThis: player [
 	player move: anInteger.
 	^ self changeLapsOf: player
 ]
 
 { #category : #playing }
-Game >> moveActualPlayerBackwards: aMovement [
+UCAGame >> moveActualPlayerBackwards: aMovement [
 	self move: aMovement*(-1) toThis: self actualPlayer
 ]
 
 { #category : #playing }
-Game >> moveActualPlayerForward: aMovement [
+UCAGame >> moveActualPlayerForward: aMovement [
 	self move: aMovement toThis: self actualPlayer
 ]
 
 { #category : #playing }
-Game >> outOfBounds: aPlayer [
+UCAGame >> outOfBounds: aPlayer [
 	^ aPlayer position >= self length | (aPlayer position < 0)
 ]
 
 { #category : #playing }
-Game >> pickCardForActualPlayer [
+UCAGame >> pickCardForActualPlayer [
 	self actualPlayer pick:1 from: deck.
 ]
 
 { #category : #playing }
-Game >> playTurn [
+UCAGame >> playTurn [
 	state canPlay ifFalse:[ InvalidAction signal: 'Cannot play a finished game.'].
 	self moveActualPlayerForward: self roll.
 	self activatePermanentEffects.
@@ -183,14 +183,14 @@ Game >> playTurn [
 ]
 
 { #category : #accessing }
-Game >> player: aPlayerName [
+UCAGame >> player: aPlayerName [
 	| index |
 	index := scoreboard indexOf: aPlayerName.
 	^scoreboard at: index.
 ]
 
 { #category : #playing }
-Game >> player: aPlayerName playCard: aCard [
+UCAGame >> player: aPlayerName playCard: aCard [
 
 	| aPlayer |
 	aPlayer := self player: aPlayerName.
@@ -198,43 +198,43 @@ Game >> player: aPlayerName playCard: aCard [
 ]
 
 { #category : #accessing }
-Game >> podiumOf: aScoreboardRaw [ 
+UCAGame >> podiumOf: aScoreboardRaw [ 
 	^ scoreboard indexOf: aScoreboardRaw 
 ]
 
 { #category : #playing }
-Game >> removePermanentCard: aCard [
+UCAGame >> removePermanentCard: aCard [
 	cardHistory remove: aCard
 ]
 
 { #category : #playing }
-Game >> repeatLastEffect [
+UCAGame >> repeatLastEffect [
 	playerSequence goBack.
 	board triggerLastFor: self.
 	self finishTurn.
 ]
 
 { #category : #playing }
-Game >> resetAllPlayersPosition [
+UCAGame >> resetAllPlayersPosition [
 	scoreboard do: [ :player | player resetPosition  ]
 ]
 
 { #category : #playing }
-Game >> roll [
+UCAGame >> roll [
 	^dice roll.
 ]
 
 { #category : #results }
-Game >> updateScoreboard [
+UCAGame >> updateScoreboard [
 	scoreboard sort: [ :a :b | a>=b ]
 ]
 
 { #category : #accessing }
-Game >> winner [
+UCAGame >> winner [
 	^state winner: self
 ]
 
 { #category : #results }
-Game >> winnerWhenFinished [
+UCAGame >> winnerWhenFinished [
 	^scoreboard first.
 ]
