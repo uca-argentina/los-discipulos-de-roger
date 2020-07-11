@@ -1,6 +1,6 @@
 Class {
 	#name : #Cancellation,
-	#superclass : #Card,
+	#superclass : #InstantCard,
 	#category : #'IngSoft2-Model-Card'
 }
 
@@ -8,22 +8,13 @@ Class {
 Cancellation class >> to: aTarget [
 	(aTarget isMemberOf: TargetPlayer)
 		ifTrue: [ InstanceCreationFailed signal: 'Target must be a card' ].
-	^ self new initializeWithTarget: aTarget
-]
-
-{ #category : #comparing }
-Cancellation >> isPermanent [
-	^false.
-]
-
-{ #category : #playing }
-Cancellation >> triggerEffectFor: aGame [ 
-
+	^ self new initializeWithTarget: aTarget from: self
 ]
 
 { #category : #playing }
 Cancellation >> useEffectFor: aGame by: aPlayer [
 	((target isValid) and: (aGame hasActivatedPermanents)) ifFalse: [InvalidAction signal: 'Invalid Card Usage'].
 	aGame removePermanentCard: target objective.
-	aGame addToDeck: self
+	aGame addToDeck: self.
+	aGame addToDiscardDeck: self.
 ]

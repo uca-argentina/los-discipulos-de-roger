@@ -45,7 +45,7 @@ Player >> addLap: lapsToMove andMove: aMovement [
 ]
 
 { #category : #accessing }
-Player >> cardCount [
+Player >> cardDeckCount [
 	^hand size
 ]
 

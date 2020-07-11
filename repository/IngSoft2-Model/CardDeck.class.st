@@ -2,42 +2,60 @@ Class {
 	#name : #CardDeck,
 	#superclass : #Object,
 	#instVars : [
-		'cards',
-		'source'
+		'cards'
 	],
 	#category : #'IngSoft2-Model-Card'
 }
 
 { #category : #'as yet unclassified' }
+CardDeck class >> defaultWith: anInteger [ 
+	|aCardDeckGenerator|
+	aCardDeckGenerator := CardDeckGenerator withAllCards.
+	^aCardDeckGenerator buildOf: anInteger.
+]
+
+{ #category : #'instance creation' }
+CardDeck class >> from: aCardDeckGenerator containing: aNumber [
+^aCardDeckGenerator buildOf: aNumber.
+]
+
+{ #category : #'instance creation' }
 CardDeck class >> with: aCollection [
-	^ 	self new
-		initializeWithCardTypes: aCollection
-		of: Random new.
+	^ self new initializeWithCards: aCollection
 ]
 
 { #category : #'as yet unclassified' }
-CardDeck class >> with: aCollection of: aSequence [
-	^ self new
-		initializeWithCardTypes: aCollection
-		of: (SequentialNaturalNumberProvider providing: aSequence).
+CardDeck >> add: aCard [
+	cards add: aCard.
 ]
 
 { #category : #'as yet unclassified' }
-CardDeck class >> withAllCards [
-	| cards |
-	cards:= { Overload new. Speed new. Acceleration new. Cancellation new. Redo new. Repeat new. }.
-	^self with: cards.
+CardDeck >> cardCount [
+	^cards size.
 ]
 
-{ #category : #accessing }
+{ #category : #'as yet unclassified' }
+CardDeck >> cards [
+^cards. 
+]
+
+{ #category : #'as yet unclassified' }
 CardDeck >> draw [
-	| aCard |
-	aCard := cards at: (source nextInt: cards size).
-	^ aCard copy
+	(cards isEmpty) ifTrue: [ InvalidAction  signal: 'Cannot draw from empty deck'].
+	 ^cards removeFirst.
 ]
 
 { #category : #initialization }
-CardDeck >> initializeWithCardTypes: aCollection of: aSource [
-	cards := aCollection.
-	source := aSource
+CardDeck >> initializeWithCards: aCollection [
+	cards := (aCollection asOrderedCollection )
+]
+
+{ #category : #'as yet unclassified' }
+CardDeck >> shuffle [
+	|newCards source|
+	(cards isEmpty) ifTrue: [ InvalidAction signal: 'Cannot shuffle an empty deck' ].
+	newCards := OrderedCollection new.
+	source:= Random new.
+	(cards size) timesRepeat: [ newCards add: (cards removeAt: (source nextInt: (cards size))) ].
+	cards := newCards.
 ]

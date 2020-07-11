@@ -27,5 +27,5 @@ PlayerTest >> testScoreRowCreation [
 	aPlayer := Player ofPlayerNamed: 'FranDeGrandis'.
 	self assert: aPlayer name equals: 'FranDeGrandis'.
 	self assert: aPlayer position equals: 0.
-	self assert: aPlayer cardCount equals: 0.
+	self assert: aPlayer cardDeckCount equals: 0.
 ]

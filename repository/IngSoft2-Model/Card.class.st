@@ -2,14 +2,25 @@ Class {
 	#name : #Card,
 	#superclass : #Object,
 	#instVars : [
-		'target'
+		'target',
+		'cardType'
 	],
 	#category : #'IngSoft2-Model-Card'
 }
 
 { #category : #accessing }
+Card class >> createTemplate [
+	^self to: NonTarget new.
+]
+
+{ #category : #accessing }
 Card class >> to: aTarget [
-	^self new initializeWithTarget: aTarget
+	^self new initializeWithTarget: aTarget from: self.
+]
+
+{ #category : #accessing }
+Card class >> to: aTarget from: aCardType [
+	^self new initializeWithTarget: aTarget from: aCardType
 ]
 
 { #category : #comparing }
@@ -17,9 +28,15 @@ Card >> = aCard [
 	^ aCard isMemberOf: self class
 ]
 
+{ #category : #comparing }
+Card >> cardType [
+	^cardType.
+]
+
 { #category : #initialization }
-Card >> initializeWithTarget: aTarget [
-	target := aTarget
+Card >> initializeWithTarget: aTarget from: aCardClass [
+	target:= aTarget.
+	cardType := aCardClass.
 ]
 
 { #category : #comparing }

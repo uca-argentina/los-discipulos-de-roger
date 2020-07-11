@@ -24,9 +24,30 @@ CardTest >> testCancellationCannotBeInitializeWithATargetPlayer [
 ]
 
 { #category : #tests }
-CardTest >> testCardDeckHasUniformDistribution [
+CardTest >> testCannotDrawFromEmptyCardDeck [
+	| aCardDeck |
+	aCardDeck := CardDeck defaultWith: 2.
+	self
+		should: [ 3 timesRepeat: [ aCardDeck draw ] ]
+		raise: InvalidAction
+		withMessageText: 'Cannot draw from empty deck'
+]
+
+{ #category : #tests }
+CardTest >> testCannotShuffleEmptyCardDeck [
+	| aCardDeck |
+	aCardDeck := CardDeck defaultWith: 1.
+	aCardDeck draw.
+	self
+		should: [ aCardDeck shuffle ]
+		raise: InvalidAction
+		withMessageText: 'Cannot shuffle an empty deck'
+]
+
+{ #category : #tests }
+CardTest >> testCardDeckGeneratorHasUniformDistribution [
 	| aCardDeck cardsDrawn overloadCount accelerationCount cancellationCount redoCount repeatCount speedCount |
-	aCardDeck := CardDeck withAllCards.
+	aCardDeck := CardDeckGenerator withAllCards.
 	cardsDrawn := OrderedCollection new.
 	100000 timesRepeat: [ cardsDrawn add: aCardDeck draw ].
 	overloadCount := cardsDrawn
@@ -57,11 +78,43 @@ CardTest >> testCardsAreIdentical [
 ]
 
 { #category : #tests }
+CardTest >> testDrawingCardDecreasesCardDeckSize [
+	| aCardDeck |
+	aCardDeck := CardDeck defaultWith: 10.
+	self assert: aCardDeck cardCount equals: 10.
+	aCardDeck draw.
+	self assert: aCardDeck cardCount equals: 9.
+	
+]
+
+{ #category : #tests }
 CardTest >> testOverloadCannotBeInitializeWithATargetPlayer [
 	self
 		should: [ Overload to: (TargetCard pointing: (Acceleration to: NonTarget new)) ]
 		raise: InstanceCreationFailed
 		withMessageText: 'Target must be a player'
+]
+
+{ #category : #tests }
+CardTest >> testShuffledDeckIncludesSameCards [
+	| aCardDeck accelerationCount overloadCount redoCount cancellationCount cardsDrawn|
+	cardsDrawn := OrderedCollection new.
+	aCardDeck := CardDeck with: {Acceleration to: NonTarget new. Overload to: NonTarget new. Cancellation to: NonTarget new. Redo to: NonTarget new. Redo to: NonTarget new}.
+	aCardDeck shuffle.
+	5 timesRepeat: [ cardsDrawn add: aCardDeck draw ].
+	overloadCount := cardsDrawn
+		count: [ :card | card isMemberOf: Overload ].
+	accelerationCount := cardsDrawn
+		count: [ :card | card isMemberOf: Acceleration ].
+	cancellationCount := cardsDrawn
+		count: [ :card | card isMemberOf: Cancellation ].
+	redoCount := cardsDrawn count: [ :card | card isMemberOf: Redo ].
+	self assert: overloadCount equals: 1.
+	self assert: accelerationCount equals: 1.
+	self assert: cancellationCount equals: 1.
+	self assert: redoCount equals: 2.
+	self assert: overloadCount equals: 1.
+	
 ]
 
 { #category : #tests }
